@@ -23,8 +23,6 @@ O-Vault uses a strong and standard encryption algorithm: [SubtleCrypto AES-GCM a
 
 Your vault is a standalone file, you can make a backup of it on a usb key, to an external harddrive or to your cloud document provider (Google Drive, One Drive, etc).
 
-⚠️ Warning: The app is in "Beta Testing" stage, so it is not ready yet to store actual sensitive passwords.
-
 ## Screenshots
 
 <img width="600px" src="./web/public/add.png">
