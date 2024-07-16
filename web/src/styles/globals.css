@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.MuiSnackbar-root {
+	font-weight: 300!important;
+}
+
+body {
+	background-color: transparent!important; 
+}
+
+.wait-cursor * {
+	cursor: wait!important;
+}
+
+#root { 
+	width: 100%;
+	border-radius: 10px;
+	border: solid 1px var(--joy-palette-background-winbar);
+	background: var(--joy-palette-background-winbar);
+	height: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+input.MuiInput-input {
+	padding-top:8px;
+	padding-bottom: 8px;
+}
+
+.password > input {
+	font-family: Consolas, 'Courier New', monospace;
+	font-size: 1.1em;
+}
+
+.custom-scrollbar::-webkit-scrollbar
+{
+	width: 6px;
+	background-color:transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb
+{
+	border-radius: 4px;
+	background-color: var(--joy-palette-neutral-500);
+}
+
+.app-region-drag {
+	-webkit-app-region: drag;
+}

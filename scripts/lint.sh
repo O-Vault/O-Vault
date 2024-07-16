@@ -1,0 +1,1 @@
+eslint . --ext .ts,.tsx && echo -e "\033[0;32m✔ No ESLint warnings or errors\e[0m"

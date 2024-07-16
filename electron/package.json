@@ -1,0 +1,30 @@
+{
+  "name": "o-vault-electron",
+  "version": "1.0.0-beta1",
+  "description": "O-Vault Password Manager",
+  "homepage": "https://github.com/O-Vault/O-Vault",
+  "main": "./js/main.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "dev": "npm run build && electron ./js/main.js",
+    "lint": "bash ../scripts/lint.sh",
+    "dist:mac": "node ./electron-builder.mjs --mac dir",
+    "dist:win": "node ./electron-builder.mjs --win dir",
+    "dist:win:all": "node ./electron-builder.mjs --win",
+    "dist:mac:all": "node ./electron-builder.mjs --mac"
+  },
+  "author": "end3rbyte <end3rbyte@outlook.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "electron": "^30.1.1",
+    "electron-builder": "^24.13.3",
+    "eslint": "^8.57.0",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "o-vault-lib": "../lib"
+  }
+}

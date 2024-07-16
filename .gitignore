@@ -1,0 +1,7 @@
+.DS_Store
+/electron/standalone
+/electron/web
+/electron/js
+dist/
+/scripts/10-million-password-list-top-1000000.txt
+/scripts/most-common-passwords.formatted.json

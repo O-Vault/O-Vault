@@ -1,0 +1,149 @@
+name: Nightly Build
+on: [workflow_dispatch]
+env:
+  APP_VERSION:
+  TAG_NAME: nightly
+jobs:
+
+  mac:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20.11
+        cache: 'npm'
+    - name: read current version
+      run: |
+        APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
+        APP_VERSION=$(echo $APP_VERSION | tr -d ' ')
+        echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+    - name: echo current version
+      run: echo $APP_VERSION
+    - name: npm install lib
+      run: cd ./lib && npm install && cd .. 
+    - name: npm install web
+      run: cd ./web && npm install && cd .. 
+    - name: npm install electron
+      run: cd ./electron && npm install && cd ..
+    - name: linting lib
+      run: npm --prefix ./lib run lint
+    - name: linting web
+      run: npm --prefix ./web run lint
+    - name: linting electron
+      run: npm --prefix ./electron run lint
+    - name: testing lib
+      run: npm --prefix ./lib test
+    - name: building lib
+      run: npm --prefix ./lib run build
+    - name: building web
+      run: |
+        npm --prefix ./web run build
+        cp -r web/dist/ ./electron/web/
+    - name: building electron
+      run: npm --prefix ./electron run build
+    - name: packaging
+      run: npm --prefix ./electron run dist:mac:all
+    - name: list generated binaries
+      run: ls ./dist/
+    - name: upload artifacts 1/2
+      uses: actions/upload-artifact@v4
+      with:
+        name: O-Vault.${{ env.APP_VERSION }}.arm64.mac.zip
+        path: ./dist/O-Vault*.arm64.mac.zip
+        retention-days: 1
+    - name: upload artifacts 2/2
+      uses: actions/upload-artifact@v4
+      with:
+        name: O-Vault.${{ env.APP_VERSION }}.x64.mac.zip
+        path: ./dist/O-Vault*.x64.mac.zip
+        retention-days: 1
+
+  windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20.11
+        cache: 'npm'
+    - name: read current version
+      run: |
+        $APP_VERSION = (Get-Content package.json) -join "`n" | ConvertFrom-Json | Select -ExpandProperty "version"
+        echo "APP_VERSION=$APP_VERSION" >> $env:GITHUB_ENV
+    - name: echo current version
+      run: echo $env:APP_VERSION
+    - name: npm install lib
+      run: cd ./lib && npm install && cd .. 
+    - name: npm install web
+      run: cd ./web && npm install && cd .. 
+    - name: npm install electron
+      run: cd ./electron && npm install && cd ..
+    - name: linting lib
+      run: npm --prefix ./lib run lint
+    - name: linting web
+      run: npm --prefix ./web run lint
+    - name: linting electron
+      run: npm --prefix ./electron run lint
+    - name: testing lib
+      run: npm --prefix ./lib test
+    - name: building lib
+      run: npm --prefix ./lib run build
+    - name: building web
+      run: |
+        npm --prefix ./web run build
+        cp -r web/dist/ ./electron/web/
+    - name: building electron
+      run: npm --prefix ./electron run build
+    - name: packaging
+      run: npm --prefix ./electron run dist:win:all
+    - name: list generated binaries
+      run: ls ./dist/
+    - name: upload artifacts 1/2
+      uses: actions/upload-artifact@v4
+      with:
+        name: O-Vault.${{ env.APP_VERSION }}.x64.win.zip
+        path: ./dist/O-Vault*.win.zip
+        retention-days: 1
+    - name: upload artifacts 2/3
+      uses: actions/upload-artifact@v4
+      with:
+        name: O-Vault.${{ env.APP_VERSION }}.x64.win.portable
+        path: ./dist/O-Vault*.win.portable.exe
+        retention-days: 1
+    - name: upload artifacts 3/3
+      uses: actions/upload-artifact@v4
+      with:
+        name: O-Vault.${{ env.APP_VERSION }}.x64.win.nsis
+        path: ./dist/O-Vault*.win.nsis.exe
+        retention-days: 1
+  publish:
+    
+    needs: [windows, mac]
+    runs-on: ubuntu-latest
+    env:
+      GH_REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+    steps:
+
+      - uses: actions/checkout@v4
+      - name: read current version
+        run: |
+          APP_VERSION=$(cat package.json \
+            | grep version \
+            | head -1 \
+            | awk -F: '{ print $2 }' \
+            | sed 's/[",]//g')
+          echo "APP_VERSION=$(echo $APP_VERSION | tr -d ' ')" >> $GITHUB_ENV
+      - name: echo current version
+        run: echo $APP_VERSION
+      - uses: actions/download-artifact@v4
+      - run: |
+          gh release delete ${{ env.TAG_NAME }} --yes || true
+          git push origin :${{ env.TAG_NAME }} || true
+      - name: Publish release
+        run: gh release create ${{ env.TAG_NAME }} --prerelease --title "$TAG_NAME" --target $GITHUB_SHA  O-Vault.${{ env.APP_VERSION }}.x64.win.portable/* O-Vault.${{ env.APP_VERSION }}.x64.win.zip/* O-Vault.${{ env.APP_VERSION }}.x64.win.nsis/* O-Vault.${{ env.APP_VERSION }}.x64.mac.zip/* O-Vault.${{ env.APP_VERSION }}.arm64.mac.zip/* 
+      
+

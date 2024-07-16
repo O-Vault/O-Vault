@@ -1,0 +1,19 @@
+{
+    "name": "o-vault",
+    "version": "1.0.0-beta1",
+    "description": "O-Vault Password Manager",
+    "main": "index.js",
+    "scripts": {
+      "install:all": "cd ./lib && npm install && cd .. && cd ./web && npm install && cd .. && cd ./electron && npm install && cd ..",
+      "dev:web": "npm --prefix ./web run dev",
+      "dev:electron": "npm --prefix ./electron run dev",
+      "dev:lib": "npm --prefix ./lib run dev",
+      "lint": "npm --prefix ./lib run lint && npm --prefix ./web run lint && npm --prefix ./electron run lint",
+      "package:mac" : "sh ./scripts/package.sh --mac",
+      "package:win" : "sh ./scripts/package.sh --win",
+      "clear": "rm -rf ./electron/web/ && rm -rf ./dist/ && rm -rf ./electron/js/ && rm -rf ./lib/dist/",
+      "test": "npm --prefix ./lib test"
+    },
+    "author": "end3rbyte <end3rbyte@outlook.com>",
+    "license": "MIT"
+  }
