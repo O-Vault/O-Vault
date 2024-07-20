@@ -15,9 +15,6 @@
   - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
   - [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
   - [Jest](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest)
-- Tools:
-  - Wireframing: [Figma](https://www.figma.com/)
-  - SVG Editing: [Inkscape](https://inkscape.org/)
 - Security: 
   - Encryption: [Web Crypto API - AES-GCM](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt#aes-gcm)
   - Top 1 million most used password list: [danielmiessler/SecLists](https://github.com/danielmiessler/SecLists/)
@@ -69,7 +66,19 @@ Or from VSCode using the Jest VSCode Extension (right click on a test file and c
 
 ## Build the App locally
 
+To generate binaries for windows:
+
 ```bash
-npm run package
+npm run package:win
 ```
-The generated folder is in ./dist
+To generate binaries for mac:
+
+```bash
+npm run package:mac
+```
+To generate binaries for linux:
+
+```bash
+npm run package:linux
+```
+The output folder is ./dist

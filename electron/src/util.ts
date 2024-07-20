@@ -45,8 +45,8 @@ const createWindow = (width: number, height: number, posX:number, posY:number, p
 
     const win = new BrowserWindow({
         icon: path.join(__dirname, '../images/app-icon-medium.png'),
-        width: width,
-        height: height,
+        width: Math.round( width * (parent != null ? parent.webContents.getZoomFactor() : 1.0) ),
+        height: Math.round( height * (parent != null ? parent.webContents.getZoomFactor() : 1.0) ),
         show: false,
         transparent: true,
         alwaysOnTop: false,
@@ -56,9 +56,9 @@ const createWindow = (width: number, height: number, posX:number, posY:number, p
         darkTheme: true,
         hasShadow: false, // if true would add a bug: squared border on the bottom left + round one
         modal: parent !== null,
-
+        
         webPreferences: {
-
+            zoomFactor: parent != null ? parent.webContents.getZoomFactor() : 1.0,
             nodeIntegration: true,
             contextIsolation: true,
             devTools: isDev,

@@ -3,6 +3,7 @@ import { CURRENT_PALETTE, Palettes } from "@/common/Palettes";
 import { SessionKeyContext } from "@/common/SessionKeyContext";
 import { VaultItem } from "@/common/Vault";
 import { BadgeLetter } from "@/components/BadgeLetter";
+import { ColorPicker } from "@/components/ColorPicker";
 import { PageHeader } from "@/components/PageHeader";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { IconContextMenu } from "@/icons/IconContextMenu";
@@ -29,6 +30,8 @@ export function VaultItemEdit() {
     const sessionKey = useContext(SessionKeyContext);
 
     const [validationStarted, setValidationStarted] = useState<boolean>(false);
+    const [colorPickerOpen, setColorPickerOpen] = useState<boolean>(false);
+    const [paletteIndex, setPaletteIndex] = useState<number>();
     const [displayType, setDisplayType] = useState(localStorage.getItem('display'));
     const [entryName, setEntryName] = useState('');
     const [entryNameError, setEntryNameError] = useState('');
@@ -42,9 +45,6 @@ export function VaultItemEdit() {
 
     const refInputPassword = useRef<HTMLDivElement>(null);
 
-    if (!isNew) {
-        console.log(inputItem);
-    }
     const cancel = () => {
 
         if (window.isModalWindow) {
@@ -52,6 +52,16 @@ export function VaultItemEdit() {
             localStorage.setItem('vaultitemedit-posy', window.screenY.toString());
         }
         window.close();
+    };
+
+
+    const getDisplayType = (): string => {
+
+        if (!displayType) {
+            return 'normal';
+        } else {
+            return displayType;
+        }
     };
 
     const storageEventHandler = () => {
@@ -136,6 +146,7 @@ export function VaultItemEdit() {
             setUsername(inputItem.username);
             setPassword(inputItem.password);
             setUrl(inputItem.url);
+            setPaletteIndex(inputItem.paletteIndex);
             updatePasswordStrength(inputItem.password);
         }
         document.addEventListener('keydown', onKeyDown, false);
@@ -161,6 +172,7 @@ export function VaultItemEdit() {
         item.name = entryName;
         item.username = username;
         item.password = password;
+        item.paletteIndex = paletteIndex;
         item.url = url;
         const encryptedItem = await aes.encrypt(JSON.stringify(item), sessionKey, false);
         ipcRenderer.closeVaultItemEditModal(encryptedItem);
@@ -205,19 +217,23 @@ export function VaultItemEdit() {
         }
     };
 
-    const getItemColor = (name:string): string => {
+    const getItemColor = (paletteIndex: number): string => {
 
-        if (!name) {
-            return theme.palette.divider;
+        if (paletteIndex !== undefined) {
+            return Palettes[CURRENT_PALETTE][paletteIndex];
+        } else {
+            return theme.palette.background.winbar;
         }
-        const colors: string[] = Palettes[CURRENT_PALETTE];
-        const colorIndex = (name.toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0)) % colors.length;
-        return colors[colorIndex];
     };
 
     const updatePasswordStrength = (newPassword: string) => {
 
         setScore(passwordUtil.calculatePasswordStrength(newPassword, false));
+    };
+
+    const onChangeColor = (newPaletteIndex: number) => {
+        setPaletteIndex(newPaletteIndex);
+        setColorPickerOpen(false);
     };
 
     const updatePasswordStrengthWithDebounce = useDebouncedCallback(updatePasswordStrength, 300);
@@ -236,12 +252,17 @@ export function VaultItemEdit() {
                         <div className="flex flex-row w-full items-center">
                             <Input className="grow" value={entryName} slotProps={{ input: { spellCheck: false } }}
                                 onChange={(e) => setEntryName(e.target.value)} autoFocus={true} />
-                            {displayType === 'normal' && <BadgeLetter itemName={entryName} className="mx-2" />}
-                            {displayType === 'compact' && <div>
-                                <div className="mx-2" style={{ borderRadius:'1px', backgroundColor: getItemColor(entryName), width: '30px', height: '30px' }} >
-                                    &nbsp;
-                                </div>
-                            </div>}
+                            <ColorPicker onChange={onChangeColor} colorPickerOpen={colorPickerOpen} onClose={() => setColorPickerOpen(false)}>
+                                {getDisplayType() === 'normal' && <BadgeLetter onClick={() => setColorPickerOpen(!colorPickerOpen)} width={36} height={36} itemName={entryName} paletteIndex={paletteIndex} className="mx-2 cursor-pointer" />}
+                                {getDisplayType() === 'compact' && entryName && <div>
+                                    <div className="mx-2" 
+                                        onClick={() => setColorPickerOpen(!colorPickerOpen)}
+                                        style={{ borderRadius: '1px', backgroundColor: getItemColor(paletteIndex), 
+                                        width: '30px', height: '30px', cursor: 'pointer' }} >
+                                        &nbsp;
+                                    </div>
+                                </div>}
+                            </ColorPicker>
                         </div>
                         <FormHelperText sx={{ marginTop: 0, visibility: entryNameError.length > 0 ? 'visible' : 'hidden' }}>
                             {entryNameError}&nbsp;

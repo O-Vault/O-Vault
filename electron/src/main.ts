@@ -10,7 +10,7 @@ if (!app.requestSingleInstanceLock()) {
 const createWindow = async (): Promise<void> => {
   const win = util.createWindow(250, 500, -1, -1, null);
 
-  win.setMaximumSize(300, 2000);
+  win.setMaximumSize(500, 2000);
   win.setMinimumSize(200, 170);
 
   return await util.loadRoute(win, '/');

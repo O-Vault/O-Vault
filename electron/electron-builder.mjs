@@ -5,7 +5,7 @@ const Platform = builder.Platform;
 
 const platform = process.argv[2];
 if (platform === undefined || platform === '') {
-    console.log('Error: First argument is missing, expected --win or --mac');
+    console.log('Error: First argument is missing, expected --win, --mac or --linux');
     process.exit(1);
 }
 
@@ -32,15 +32,22 @@ const options = {
       ],
     icon: 'resources/icons/png',
     win: {
-        target: targets || ['portable', 'zip', 'nsis'],
+        target: targets || ['portable', 'zip', 'msi'],
         artifactName: '${productName}-${version}.${arch}.${os}.${ext}',
         icon: 'resources/icons/png',
     },
     portable: {
         artifactName: '${productName}-${version}.${arch}.${os}.portable.${ext}',
     },
-    nsis: {
-        artifactName: '${productName}-${version}.${arch}.${os}.nsis.${ext}',
+    msi: {
+        artifactName: '${productName}-${version}.${arch}.${os}.${ext}',
+        oneClick: false
+    },
+    linux: {
+        target: targets || ['AppImage', 'deb', 'snap', 'rpm'],
+        artifactName: '${productName}-${version}.${arch}.linux.${ext}',
+        icon: 'resources/icons/png',
+        category:'Utility'
     },
     mac: {
         artifactName: '${productName}-${version}.${arch}.${os}.${ext}',
@@ -58,9 +65,15 @@ let target;
 if (platform === '--mac') {
     target = Platform.MAC.createTarget();
     options.win = undefined;
-} else {
+    options.linux = undefined;
+} else if (platform === '--win') {
     target = Platform.WINDOWS.createTarget();
     options.mac = undefined;
+    options.linux = undefined;
+} else {
+    target = Platform.LINUX.createTarget();
+    options.mac = undefined;
+    options.win = undefined;
 }
 
 builder.build({

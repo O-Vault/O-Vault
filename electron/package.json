@@ -1,6 +1,6 @@
 {
-  "name": "o-vault-electron",
-  "version": "1.0.0-beta1",
+  "name": "o-vault",
+  "version": "1.0.0-beta2-snapshot",
   "description": "O-Vault Password Manager",
   "homepage": "https://github.com/O-Vault/O-Vault",
   "main": "./js/main.js",
@@ -11,8 +11,10 @@
     "lint": "bash ../scripts/lint.sh",
     "dist:mac": "node ./electron-builder.mjs --mac dir",
     "dist:win": "node ./electron-builder.mjs --win dir",
+    "dist:linux": "node ./electron-builder.mjs --linux dir",
     "dist:win:all": "node ./electron-builder.mjs --win",
-    "dist:mac:all": "node ./electron-builder.mjs --mac"
+    "dist:mac:all": "node ./electron-builder.mjs --mac",
+    "dist:linux:all": "node ./electron-builder.mjs --linux"
   },
   "author": "end3rbyte <end3rbyte@outlook.com>",
   "license": "MIT",

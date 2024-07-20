@@ -1,8 +1,7 @@
-name: Nightly Build
+name: Build App
 on: [workflow_dispatch]
 env:
   APP_VERSION:
-  TAG_NAME: nightly
 jobs:
 
   mac:
@@ -57,6 +56,72 @@ jobs:
       with:
         name: O-Vault.${{ env.APP_VERSION }}.x64.mac.zip
         path: ./dist/O-Vault*.x64.mac.zip
+        retention-days: 1
+
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20.11
+        cache: 'npm'
+    - name: read current version
+      run: |
+        APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
+        APP_VERSION=$(echo $APP_VERSION | tr -d ' ')
+        echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+    - name: echo current version
+      run: echo $APP_VERSION
+    - name: npm install lib
+      run: cd ./lib && npm install && cd .. 
+    - name: npm install web
+      run: cd ./web && npm install && cd .. 
+    - name: npm install electron
+      run: cd ./electron && npm install && cd ..
+    - name: linting lib
+      run: npm --prefix ./lib run lint
+    - name: linting web
+      run: npm --prefix ./web run lint
+    - name: linting electron
+      run: npm --prefix ./electron run lint
+    - name: testing lib
+      run: npm --prefix ./lib test
+    - name: building lib
+      run: npm --prefix ./lib run build
+    - name: building web
+      run: |
+        npm --prefix ./web run build
+        cp -r web/dist/ ./electron/web/
+    - name: building electron
+      run: npm --prefix ./electron run build
+    - name: packaging
+      run: npm --prefix ./electron run dist:linux:all
+    - name: list generated binaries
+      run: ls ./dist/
+    - name: upload artifacts 1/4
+      uses: actions/upload-artifact@v4
+      with:
+        name: O-Vault.${{ env.APP_VERSION }}.amd64.linux.deb
+        path: ./dist/O-Vault*.amd64.linux.deb
+        retention-days: 1
+    - name: upload artifacts 2/4
+      uses: actions/upload-artifact@v4
+      with:
+        name: O-Vault.${{ env.APP_VERSION }}.amd64.linux.snap
+        path: ./dist/O-Vault*.amd64.linux.snap
+        retention-days: 1
+    - name: upload artifacts 3/4
+      uses: actions/upload-artifact@v4
+      with:
+        name: O-Vault.${{ env.APP_VERSION }}.x86_64.linux.AppImage
+        path: ./dist/O-Vault*.x86_64.linux.AppImage
+        retention-days: 1
+    - name: upload artifacts 4/4
+      uses: actions/upload-artifact@v4
+      with:
+        name: O-Vault.${{ env.APP_VERSION }}.x86_64.linux.rpm
+        path: ./dist/O-Vault*.x86_64.linux.rpm
         retention-days: 1
 
   windows:
@@ -114,12 +179,12 @@ jobs:
     - name: upload artifacts 3/3
       uses: actions/upload-artifact@v4
       with:
-        name: O-Vault.${{ env.APP_VERSION }}.x64.win.nsis
-        path: ./dist/O-Vault*.win.nsis.exe
+        name: O-Vault.${{ env.APP_VERSION }}.x64.win.msi
+        path: ./dist/O-Vault*.win.msi
         retention-days: 1
   publish:
     
-    needs: [windows, mac]
+    needs: [windows, mac, linux]
     runs-on: ubuntu-latest
     env:
       GH_REPO: ${{ github.repository }}
@@ -141,9 +206,19 @@ jobs:
         run: echo $APP_VERSION
       - uses: actions/download-artifact@v4
       - run: |
-          gh release delete ${{ env.TAG_NAME }} --yes || true
-          git push origin :${{ env.TAG_NAME }} || true
+          gh release delete v${{ env.APP_VERSION }} --yes || true
+          git push origin :v${{ env.APP_VERSION }} || true
       - name: Publish release
-        run: gh release create ${{ env.TAG_NAME }} --prerelease --title "$TAG_NAME" --target $GITHUB_SHA  O-Vault.${{ env.APP_VERSION }}.x64.win.portable/* O-Vault.${{ env.APP_VERSION }}.x64.win.zip/* O-Vault.${{ env.APP_VERSION }}.x64.win.nsis/* O-Vault.${{ env.APP_VERSION }}.x64.mac.zip/* O-Vault.${{ env.APP_VERSION }}.arm64.mac.zip/* 
-      
-
+        run: |
+          echo -e "Not stable version, only for testing\nBuild date: $(date +'%Y-%m-%d')" > notes.txt
+          gh release create v${{ env.APP_VERSION }} --prerelease --latest=false --title "O-Vault ${{ env.APP_VERSION }}" \
+                --notes-file notes.txt  --target $GITHUB_SHA \
+                O-Vault.${{ env.APP_VERSION }}.x64.win.portable/* \
+                O-Vault.${{ env.APP_VERSION }}.x64.win.zip/* \
+                O-Vault.${{ env.APP_VERSION }}.x64.win.msi/* \
+                O-Vault.${{ env.APP_VERSION }}.x64.mac.zip/* \
+                O-Vault.${{ env.APP_VERSION }}.arm64.mac.zip/* \
+                O-Vault.${{ env.APP_VERSION }}.amd64.linux.deb/* \
+                O-Vault.${{ env.APP_VERSION }}.amd64.linux.snap/* \
+                O-Vault.${{ env.APP_VERSION }}.x86_64.linux.AppImage/* \
+                O-Vault.${{ env.APP_VERSION }}.x86_64.linux.rpm/*

@@ -13,7 +13,7 @@ import { WinBottom } from '@/components/WinBottom';
 import { themeDefinition } from '@/common/theme';
 import { passwordUtil } from 'o-vault-lib'; 
 import { WinBarModal } from '@/components/WinBarModal';
-import { WinBody } from './WinBody';
+import { CurrentRoute } from "@/routes/CurrentRoute";
 
 export  function App() {
 
@@ -103,6 +103,21 @@ export  function App() {
         };
     }, []);
 
+    const getWindowsSpecificStyling = () => {
+
+        if (window.electronAPI.platform.startsWith('win')) {
+
+            return {
+                paddingLeft: '0px',
+                paddingRight: '1px',
+                paddingBottom: '1px',
+                paddingTop: '1px'
+            };
+        } else {
+            return {};
+        }
+    }; 
+
     return (
         <StrictMode>
             <CssVarsProvider theme={themeDefinition} defaultMode="dark">
@@ -112,11 +127,18 @@ export  function App() {
                             <CssBaseline /> 
 
                             {!loading  && !isRunningOutsideElectron && <div id="main"
-
+                                style={getWindowsSpecificStyling()}
                                 className={`select-none h-full w-full grow flex flex-col ${context.showWaitCursor ? 'wait-cursor': ''}`} >
                                 {window.isModalWindow && <WinBarModal/> } 
-                                {window.isMainWindow && <WinBar /> } 
-                                <WinBody />
+                                {window.isMainWindow && <WinBar  /> } 
+                                
+                                <div className="grow overflow-y-auto overflow-x-hidden custom-scrollbar" 
+                                    style={{background: 'var(--joy-palette-background-body'}}>
+                                    <div className="h-full"  >
+                                        <CurrentRoute />
+                                    </div>
+                                </div>
+                                
                                 <WinBottom />
                             </div>}
                             {isRunningOutsideElectron && <div className="py-10 px-4 text-left w-full" >

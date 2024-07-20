@@ -21,8 +21,10 @@ cp -r web/dist/ ./electron/web/
 echo Packaging...
 if [[ $1 == "--mac" ]]; then
   npm --prefix ./electron run dist:mac
-else 
+elif [[ $1 == "--win" ]]; then
   npm --prefix ./electron run dist:win
+else 
+  npm --prefix ./electron run dist:linux
 fi
 
 echo Output folder: "$PWD/dist/"

@@ -61,7 +61,7 @@ export function PasswordStrength({score, nbOfChars, className}:Params) {
                     textColor="common.white"
                     sx={{ mixBlendMode: 'difference' }}
                 >
-                   {text} { nbOfChars>0 && window.isDev && <span> ({score}/100)</span>}
+                   {text} 
                   
                 </Typography>
             </LinearProgress>

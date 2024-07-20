@@ -6,7 +6,6 @@ import { About } from "@/routes/About";
 import { Home } from "@/routes/Home";
 import { Open } from "@/routes/Open";
 import { Settings } from "@/routes/Settings";
-import { Design } from "@/routes/Design";
 import { VaultEdit } from "@/routes/VaultEdit";
 import { MessageBox } from "@/routes/MessageBox";
 import { VaultItemEdit } from "./VaultItemEdit";
@@ -27,9 +26,6 @@ export function CurrentRoute() {
             break;
         case '/open':
             currentPage = <Open />;
-            break;
-        case '/design':
-            currentPage = <Design />;
             break;
         case '/vault/new':
             currentPage = <VaultEdit />;

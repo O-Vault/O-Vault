@@ -5,36 +5,39 @@ import { useTheme } from "@mui/joy";
 interface Params {
   itemName: string,
   className?: string,
-  fontFamily?: string
+  fontFamily?: string,
+  width?: number,
+  height?: number,
+  paletteIndex: number,
+  onClick?: () => void
 }
 
-export function BadgeLetter({ itemName, className }: Params) {
+export function BadgeLetter({ itemName, className, width, height, paletteIndex, onClick }: Params) {
 
   const itemsLetterFont = 'Arial, sans-serif';
 
   const theme = useTheme();
 
-  const getItemColor = (itemName: string): string => {
+  const getItemColor = (): string => {
 
-    if (!itemName) {
-      return theme.palette.divider;
+    if (paletteIndex !== undefined) {
+      return Palettes[CURRENT_PALETTE][paletteIndex];
+    } else {
+      return theme.palette.background.winbar;
     }
-    const colors: string[] = Palettes[CURRENT_PALETTE];
-    const colorIndex = (itemName.toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0)) % colors.length;
-    return colors[colorIndex];
   };
 
-  const getItemFirstLetter = (itemName: string): string => {
+  const getItemFirstLetter = (): string => {
 
     if (itemName) {
       return itemName.toUpperCase().charAt(0);
     } else {
-      return '?';
+      return ' ';
     }
   };
 
   return (
-     <IconBadgeLetter className={className} style={{ color: getItemColor(itemName) }} fontFamily={itemsLetterFont} color={theme.palette.background.body}
-      letter={getItemFirstLetter(itemName)} x={12} y={16.161} />
+    itemName && <IconBadgeLetter width={width} height={height} onClick={onClick} className={className} style={{ color: getItemColor() }} fontFamily={itemsLetterFont} color={theme.palette.background.body}
+      letter={getItemFirstLetter()} x={12} y={16.161} />
   );
 }

@@ -11,6 +11,8 @@ import { RouterContext } from "@/common/RouterContext";
 import { util } from "o-vault-lib";
 import { IconMinimize } from "@/icons/IconMinimize";
 
+
+
 export function WinBar() {
 
     const WIDTH_LIMIT = 250;
@@ -36,6 +38,11 @@ export function WinBar() {
         route.current = '/open';
         route.args = ['new-vault'];
         setRoute({ ...route });
+    };
+
+    const addNewEntryClick = () => {
+        const event = new Event('onNewEntry');
+        document.dispatchEvent(event);
     };
 
     const handleResize = () => {
@@ -78,22 +85,14 @@ export function WinBar() {
 
     const closeVault = () => {
 
-        context.vaultLoaded = false;
-        context.password = null;
-        context.vault = null;
-        setContext({ ...context });
+        const event = new Event('onCloseVault');
+        document.dispatchEvent(event);
     };
 
     async function retrieveAlwayOnTop() {
         const val = await ipcRenderer.appGetAlwaysOnTop();
         setAlwaysOnTop(val);
     }
-
-    const navigate = (newRoute: string) => {
-
-        route.current = newRoute;
-        setRoute({ ...route });
-    };
     
     const openSettings = async () => {
 
@@ -134,11 +133,11 @@ export function WinBar() {
                 <Menu>
                     {!context.vaultLoaded && <MenuItem onClick={onNewClick} >New</MenuItem>}
                     {!context.vaultLoaded && <MenuItem onClick={onOpenClick}>Open</MenuItem>}
-                    {context.vaultLoaded && <MenuItem onClick={closeVault}>Close</MenuItem>}
+                    {context.vaultLoaded && <MenuItem onClick={addNewEntryClick} >Add New</MenuItem>}
+                    {context.vaultLoaded && <MenuItem onClick={closeVault}>Close Vault</MenuItem>}
                     <ListDivider />
                     <MenuItem onClick={openSettings}>App Settings</MenuItem>
                     {window.isDev && <MenuItem onClick={() => ipcRenderer.appDevTools()}>Dev Tools</MenuItem>}
-                    {window.isDev && <MenuItem onClick={() => navigate('/design')}>Design</MenuItem>}
                     <MenuItem onClick={() => close()}>Exit</MenuItem>
                 </Menu>
             </Dropdown>

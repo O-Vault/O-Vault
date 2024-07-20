@@ -2,6 +2,7 @@
 
 interface OVaultIpcRenderer extends Electron.IpcRenderer {
     argv: string[];
+    platform: string;
 }
 declare interface Window {
     electronAPI: OVaultIpcRenderer

@@ -96,7 +96,7 @@ export function Home() {
     if (filter !== undefined && filter !== '' && filteredItems().length === 0) {
       item.name = filter;
     }
-    const modalResult = await ipcRenderer.openVaultItemEditModal(item, 500, 510, posX, posY);
+    const modalResult = await ipcRenderer.openVaultItemEditModal(item, 500, 520, posX, posY);
     setNewVaultItemBtnDisabled(false);
 
     if (modalResult !== undefined) {
@@ -130,7 +130,7 @@ export function Home() {
     const posX = Number(localStorage.getItem('vaultitemedit-posx') || -1);
     const posY = Number(localStorage.getItem('vaultitemedit-posy') || -1);
 
-    const modalResult = await ipcRenderer.openVaultItemEditModal(inputItem, 500, 510, posX, posY);
+    const modalResult = await ipcRenderer.openVaultItemEditModal(inputItem, 500, 520, posX, posY);
 
     if (modalResult !== undefined) {
 
@@ -141,6 +141,7 @@ export function Home() {
         inputItem.username = item.username;
         inputItem.password = item.password;
         inputItem.url = item.url;
+        inputItem.paletteIndex = item.paletteIndex;
       } else {
         context.vault.items.push(item);
       }
@@ -156,6 +157,15 @@ export function Home() {
     },
     ':focus': {
       background: `${theme.palette.background.winbar}!important`
+    }
+  };
+
+  const getDisplayType = (): string => {
+
+    if (!displayType) {
+      return 'normal';
+    } else {
+      return displayType;
     }
   };
 
@@ -191,7 +201,15 @@ export function Home() {
   };
 
   const onBlurHandler = () => {
-    setSnackBar({...snackBar, open: false});
+    setSnackBar({ ...snackBar, open: false });
+  };
+
+  const onCloseVault = () => {
+
+    context.vaultLoaded = false;
+    context.password = null;
+    context.vault = null;
+    setContext({ ...context });
   };
 
   useEffect(() => {
@@ -203,11 +221,15 @@ export function Home() {
 
     window.addEventListener('storage', storageEventHandler, false);
     document.addEventListener('visibilitychange', visibilityChangeHandler, false);
+    document.addEventListener('onNewEntry', addNew, false);
+    document.addEventListener('onCloseVault', onCloseVault, false);
     window.addEventListener('focus', onFocusHandler, false);
     window.addEventListener('blur', onBlurHandler, false);
     return () => {
       window.removeEventListener('storage', storageEventHandler, false);
       document.removeEventListener('visibilitychange', visibilityChangeHandler, false);
+      document.removeEventListener('onNewEntry', addNew, false);
+      document.removeEventListener('onCloseVault', onCloseVault, false);
       window.removeEventListener('focus', onFocusHandler, false);
       window.removeEventListener('blur', onBlurHandler, false);
     };
@@ -227,9 +249,11 @@ export function Home() {
 
   const getItemColor = (item: VaultItem): string => {
 
-    const colors: string[] = Palettes[CURRENT_PALETTE];
-    const colorIndex = (item.name.toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0)) % colors.length;
-    return colors[colorIndex];
+    if (item.paletteIndex) {
+      return Palettes[CURRENT_PALETTE][item.paletteIndex];
+    } else {
+      return theme.palette.background.winbar;
+    }
   };
 
   return (
@@ -278,20 +302,20 @@ export function Home() {
                 <div key={item.name} tabIndex={0}
 
                   onKeyDown={(e) => onKeyDown(e, item)}
-                  className={`flex flex-row items-center w-full ${displayType === 'normal' ? 'py-2' : ''} px-2 text-left rounded-md vault-item`}
+                  className={`flex flex-row items-center w-full ${getDisplayType() === 'normal' ? 'py-2' : ''} px-2 text-left rounded-md vault-item`}
                   onClick={(e) => { copyUsernamePasswordToClipboard(e, item); }}
                 >
-                  {displayType === 'normal' && <div>
-                    <BadgeLetter itemName={item.name} />
+                  {getDisplayType() === 'normal' && <div>
+                    <BadgeLetter itemName={item.name} paletteIndex={item.paletteIndex} />
                   </div>}
-                  {displayType === 'compact' && <div>
+                  {getDisplayType() === 'compact' && <div>
                     <div style={{ backgroundColor: getItemColor(item), width: '14px', height: '14px' }} >
                       &nbsp;
                     </div>
                   </div>}
                   <div className="grow flex flex-col pl-3 overflow-hidden">
-                    <Typography level={displayType === 'normal' ? 'body-lg' : 'body-md'} className="overflow-hidden text-ellipsis capitalize" sx={{fontFamily:itemsFont}} >{item.name}</Typography>
-                    {displayType === 'normal' && <Typography level="body-sm" className="overflow-hidden text-ellipsis" sx={{fontFamily:itemsFont}} >{item.username}</Typography>}
+                    <Typography level={getDisplayType() === 'normal' ? 'body-lg' : 'body-md'} className="overflow-hidden text-ellipsis capitalize" sx={{ fontFamily: itemsFont }} >{item.name}</Typography>
+                    {getDisplayType() === 'normal' && <Typography level="body-sm" className="overflow-hidden text-ellipsis" sx={{ fontFamily: itemsFont }} >{item.username}</Typography>}
                   </div>
 
                   <Dropdown>
@@ -302,7 +326,7 @@ export function Home() {
                       size="sm" tabIndex={-1}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <IconContextMenu style={{ width: '20px', height:displayType === 'normal' ? '22px' : '18px'}} />
+                      <IconContextMenu style={{ width: '20px', height: getDisplayType() === 'normal' ? '22px' : '18px' }} />
                     </MenuButton>
                     <Menu placement="bottom-end">
                       <MenuItem className="menuitem" sx={menuItemStyling} onClick={(e) => onEdit(e, item)}>Edit</MenuItem>

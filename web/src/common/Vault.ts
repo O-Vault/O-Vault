@@ -16,6 +16,7 @@ export class VaultItem {
     username: string;
     password: string;
     url: string;
+    paletteIndex: number;
     constructor() {
 
     }
