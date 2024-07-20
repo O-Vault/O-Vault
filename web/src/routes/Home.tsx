@@ -77,6 +77,28 @@ export function Home() {
     showSnackBarMessage(e, `Password copied for ${item.name}`);
   };
 
+  const getLeastUsedColor = (items: VaultItem[]): number => {
+
+    const aggregates: Map<number, number> = new Map();
+    Palettes[CURRENT_PALETTE].forEach((_value: string, index: number) => {
+      aggregates.set(index, 0);
+    });
+
+    items.forEach(item => {
+
+      aggregates.set(item.paletteIndex, aggregates.get(item.paletteIndex) + 1);
+    });
+
+    let min = items.length;
+    let minPaletteIndex = 0;
+    aggregates.forEach((occurence: number, color: number) => {
+      if (occurence < min) {
+        min = occurence;
+        minPaletteIndex = color;
+      }
+    });
+    return minPaletteIndex;
+  };
 
   const onResetSearch = () => {
     setFilter('');
@@ -96,6 +118,7 @@ export function Home() {
     if (filter !== undefined && filter !== '' && filteredItems().length === 0) {
       item.name = filter;
     }
+    item.paletteIndex = getLeastUsedColor(context.vault.items);
     const modalResult = await ipcRenderer.openVaultItemEditModal(item, 500, 520, posX, posY);
     setNewVaultItemBtnDisabled(false);
 

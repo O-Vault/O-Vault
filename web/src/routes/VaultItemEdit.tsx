@@ -141,6 +141,7 @@ export function VaultItemEdit() {
             if (inputItem.name) {
                 setEntryName(inputItem.name);
             }
+            setPaletteIndex(inputItem.paletteIndex);
         } else {
             setEntryName(inputItem.name);
             setUsername(inputItem.username);
@@ -254,7 +255,7 @@ export function VaultItemEdit() {
                                 onChange={(e) => setEntryName(e.target.value)} autoFocus={true} />
                             <ColorPicker onChange={onChangeColor} colorPickerOpen={colorPickerOpen} onClose={() => setColorPickerOpen(false)}>
                                 {getDisplayType() === 'normal' && <BadgeLetter onClick={() => setColorPickerOpen(!colorPickerOpen)} width={36} height={36} itemName={entryName} paletteIndex={paletteIndex} className="mx-2 cursor-pointer" />}
-                                {getDisplayType() === 'compact' && entryName && <div>
+                                {getDisplayType() === 'compact' && <div>
                                     <div className="mx-2" 
                                         onClick={() => setColorPickerOpen(!colorPickerOpen)}
                                         style={{ borderRadius: '1px', backgroundColor: getItemColor(paletteIndex), 

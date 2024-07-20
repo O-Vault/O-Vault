@@ -37,7 +37,7 @@ export function BadgeLetter({ itemName, className, width, height, paletteIndex, 
   };
 
   return (
-    itemName && <IconBadgeLetter width={width} height={height} onClick={onClick} className={className} style={{ color: getItemColor() }} fontFamily={itemsLetterFont} color={theme.palette.background.body}
+    <IconBadgeLetter width={width} height={height} onClick={onClick} className={className} style={{ color: getItemColor() }} fontFamily={itemsLetterFont} color={theme.palette.background.body}
       letter={getItemFirstLetter()} x={12} y={16.161} />
   );
 }
