@@ -139,6 +139,20 @@ export const registerIpcEvents = (app: App): void => {
 
     });
 
+    ipcMain.handle('app:open-about-modal', async (_e: IpcMainInvokeEvent, width: number, height: number,
+        posX: number, posY: number): Promise<void> => {
+
+        return await new Promise((resolve) => {
+            const parent = getMainWindow();
+            const win = util.createWindow(width, height, posX, posY, parent);
+            util.loadRoute(win, '/about');
+            win.once('close', () => {
+                resolve();
+            });
+        });
+
+    });
+
     ipcMain.on('app:close-vault-edit-modal', (_e: IpcMainInvokeEvent, vaultPath: string, encryptedPassword: Uint16Array): void => {
 
         (getModalWindow() as VaultEditBrowserWindow).modalResult = {

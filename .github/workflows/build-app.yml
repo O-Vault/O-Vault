@@ -170,13 +170,7 @@ jobs:
         name: O-Vault.${{ env.APP_VERSION }}.x64.win.zip
         path: ./dist/O-Vault*.win.zip
         retention-days: 1
-    - name: upload artifacts 2/3
-      uses: actions/upload-artifact@v4
-      with:
-        name: O-Vault.${{ env.APP_VERSION }}.x64.win.portable
-        path: ./dist/O-Vault*.win.portable.exe
-        retention-days: 1
-    - name: upload artifacts 3/3
+    - name: upload artifacts 2/2
       uses: actions/upload-artifact@v4
       with:
         name: O-Vault.${{ env.APP_VERSION }}.x64.win.msi
@@ -211,9 +205,8 @@ jobs:
       - name: Publish release
         run: |
           echo -e "Not stable version, only for testing\nBuild date: $(date +'%Y-%m-%d')" > notes.txt
-          gh release create v${{ env.APP_VERSION }} --prerelease --latest=false --title "O-Vault ${{ env.APP_VERSION }}" \
+          gh release create v${{ env.APP_VERSION }} --prerelease --draft --latest=false --title "O-Vault ${{ env.APP_VERSION }}" \
                 --notes-file notes.txt  --target $GITHUB_SHA \
-                O-Vault.${{ env.APP_VERSION }}.x64.win.portable/* \
                 O-Vault.${{ env.APP_VERSION }}.x64.win.zip/* \
                 O-Vault.${{ env.APP_VERSION }}.x64.win.msi/* \
                 O-Vault.${{ env.APP_VERSION }}.x64.mac.zip/* \

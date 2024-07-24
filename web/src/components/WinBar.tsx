@@ -1,7 +1,7 @@
 import { Dropdown, IconButton, ListDivider, Menu, MenuButton, MenuItem, Typography, useTheme } from "@mui/joy";
 import { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "@/common/GlobalContext";
-import { ipcRenderer } from "@/common/ipcRenderer";
+
 import { IconApp } from "@/icons/IconApp";
 import { IconClose } from "@/icons/IconClose";
 import { IconMenu } from "@/icons/IconMenu";
@@ -56,7 +56,7 @@ export function WinBar() {
             setCloseBtnDisabled(true);
             context.showWaitCursor = true;
             setContext({...context});
-            const result = await ipcRenderer.openMessageBox({
+            const result = await window.electronAPI.openMessageBox({
                 text: 'The vault will be closed \n\nAre you sure you want to continue ?',
                 title: 'Confirmation',
                 okBtnLabel: 'QUIT',
@@ -78,7 +78,7 @@ export function WinBar() {
     const toggleAlwaysOnTop = () => {
 
         const newValue = !alwaysOnTop;
-        ipcRenderer.appSetAlwaysOnTop(newValue);
+        window.electronAPI.appSetAlwaysOnTop(newValue);
         setAlwaysOnTop(newValue);
 
     };
@@ -90,7 +90,7 @@ export function WinBar() {
     };
 
     async function retrieveAlwayOnTop() {
-        const val = await ipcRenderer.appGetAlwaysOnTop();
+        const val = await window.electronAPI.appGetAlwaysOnTop();
         setAlwaysOnTop(val);
     }
     
@@ -100,10 +100,20 @@ export function WinBar() {
         const posY = Number(localStorage.getItem('settings-posy') || -1);
         context.showWaitCursor = true;
         setContext({...context});
-        await ipcRenderer.openSettingsModal(500, 500, posX, posY);
+        await window.electronAPI.openSettingsModal(500, 420, posX, posY);
         context.showWaitCursor = false;
         setContext({...context});
     };
+
+    const openAbout = async () => {
+
+        context.showWaitCursor = true;
+        setContext({...context});
+        await window.electronAPI.openAboutModal(500, 500);
+        context.showWaitCursor = false;
+        setContext({...context});
+    };
+
 
     useEffect(() => {
 
@@ -137,7 +147,8 @@ export function WinBar() {
                     {context.vaultLoaded && <MenuItem onClick={closeVault}>Close Vault</MenuItem>}
                     <ListDivider />
                     <MenuItem onClick={openSettings}>App Settings</MenuItem>
-                    {window.isDev && <MenuItem onClick={() => ipcRenderer.appDevTools()}>Dev Tools</MenuItem>}
+                    <MenuItem onClick={openAbout}>About</MenuItem>
+                    {window.isDev && <MenuItem onClick={() => window.electronAPI.openDevTools(window.isModalWindow)}>Dev Tools</MenuItem>}
                     <MenuItem onClick={() => close()}>Exit</MenuItem>
                 </Menu>
             </Dropdown>
@@ -155,7 +166,7 @@ export function WinBar() {
             {alwaysOnTop && <IconButton onClick={toggleAlwaysOnTop} title="Unpin window" >
                 <IconPined style={{ width: '16px' }} />
             </IconButton>}
-            <IconButton onClick={ipcRenderer.appMinimize} title="Minimize"  >
+            <IconButton onClick={window.electronAPI.appMinimize} title="Minimize"  >
                 <IconMinimize style={{ width: '15px' }} />
             </IconButton>
             <IconButton disabled={closeBtnDisabled} onClick={() => close()} title="Close">

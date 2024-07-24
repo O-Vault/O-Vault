@@ -1,35 +1,31 @@
 
 import { StrictMode, useEffect, useState } from "react";
 import { WinBar } from "@/components/WinBar";
-
 import { AppContext } from "@/common/GlobalContext";
 import { GlobalContext } from "@/common/GlobalContext";
-import { ipcRenderer } from "@/common/ipcRenderer";
 import { Route, RouterContext } from '@/common/RouterContext';
 import { CssVarsProvider, CssBaseline } from '@mui/joy';
 import { SessionKeyContext } from '@/common/SessionKeyContext';
 import { WinBottom } from '@/components/WinBottom';
-
 import { themeDefinition } from '@/common/theme';
-import { passwordUtil } from 'o-vault-lib'; 
+import { passwordUtil } from 'o-vault-lib';
 import { WinBarModal } from '@/components/WinBarModal';
 import { CurrentRoute } from "@/routes/CurrentRoute";
 
-export  function App() {
+export function App() {
 
     const [context, setContext] = useState<AppContext>(new AppContext());
-    
+
     const [route, setRoute] = useState<Route>(new Route());
     const [loading, setLoading] = useState(true);
-    
     const [sessionKey, setSessionKey] = useState('');
     const [isRunningOutsideElectron, setIsRunningOutsideElectron] = useState(false);
 
     const handleKeyup = (e: KeyboardEvent) => {
 
         if (e.code == 'F12' && window.isDev) {
-           
-            ipcRenderer.appDevTools();
+
+            window.electronAPI.openDevTools(window.isModalWindow);
         }
     };
 
@@ -37,7 +33,7 @@ export  function App() {
         if (window.electronAPI === undefined) {
             return false;
         } else {
-            return window.electronAPI.argv.filter((curr)=>curr.startsWith('--isModal='))[0] === '--isModal=true';
+            return window.electronAPI.argv.filter((curr) => curr.startsWith('--isModal='))[0] === '--isModal=true';
         }
     };
 
@@ -45,12 +41,12 @@ export  function App() {
         if (window.electronAPI === undefined) {
             return false;
         } else {
-            return window.electronAPI.argv.filter((curr)=>curr.startsWith('--isDev='))[0] === '--isDev=true';
+            return window.electronAPI.argv.filter((curr) => curr.startsWith('--isDev='))[0] === '--isDev=true';
         }
     };
 
-    const handleInitialRedirect = (): void  => {
-             
+    const handleInitialRedirect = (): void => {
+
         window.initialRoute = getParameterByName('route');
         window.isModalWindow = isModalWindow();
         window.isMainWindow = !window.isModalWindow;
@@ -61,13 +57,12 @@ export  function App() {
         }
         if (window.initialRoute && window.initialRoute !== route.current) {
             route.current = window.initialRoute;
-            setRoute({...route});
+            setRoute({ ...route });
         }
-        
     };
 
-    const getParameterByName = (name:string, url = window.location.href) => {
-        
+    const getParameterByName = (name: string, url = window.location.href) => {
+
         const regex = new RegExp('[?&]' + name + `(=([^&#]*)|&|#|$)`),
             results = regex.exec(url);
         if (!results) {
@@ -77,17 +72,17 @@ export  function App() {
             return '';
         }
         return decodeURIComponent(results[2].replace(/\+/g, ' '));
-      };
+    };
 
     const handleUseEffect = async () => {
-        
+
         handleInitialRedirect();
-        let sessionKey : string;
+        let sessionKey: string;
         if (window.isMainWindow) {
             sessionKey = passwordUtil.generatePassword(16);
-            await ipcRenderer.sendSessionKey(sessionKey);
+            await window.electronAPI.sendSessionKey(sessionKey);
         } else {
-            sessionKey = await ipcRenderer.getSessionKey();
+            sessionKey = await window.electronAPI.getSessionKey();
         }
         setSessionKey(sessionKey);
         setLoading(false);
@@ -96,7 +91,7 @@ export  function App() {
     };
 
     useEffect(() => {
-    
+
         handleUseEffect();
         return () => {
             window.removeEventListener('keyup', handleKeyup, false);
@@ -116,7 +111,7 @@ export  function App() {
         } else {
             return {};
         }
-    }; 
+    };
 
     return (
         <StrictMode>
@@ -124,21 +119,21 @@ export  function App() {
                 <RouterContext.Provider value={{ route, setRoute }}>
                     <SessionKeyContext.Provider value={sessionKey}>
                         <GlobalContext.Provider value={{ context, setContext }}>
-                            <CssBaseline /> 
+                            <CssBaseline />
 
-                            {!loading  && !isRunningOutsideElectron && <div id="main"
+                            {!loading && !isRunningOutsideElectron && <div id="main"
                                 style={getWindowsSpecificStyling()}
-                                className={`select-none h-full w-full grow flex flex-col ${context.showWaitCursor ? 'wait-cursor': ''}`} >
-                                {window.isModalWindow && <WinBarModal/> } 
-                                {window.isMainWindow && <WinBar  /> } 
-                                
-                                <div className="grow overflow-y-auto overflow-x-hidden custom-scrollbar" 
-                                    style={{background: 'var(--joy-palette-background-body'}}>
+                                className={`select-none h-full w-full grow flex flex-col ${context.showWaitCursor ? 'wait-cursor' : ''}`} >
+                                {window.isModalWindow && <WinBarModal />}
+                                {window.isMainWindow && <WinBar />}
+
+                                <div className="grow overflow-y-auto overflow-x-hidden custom-scrollbar"
+                                    style={{ background: 'var(--joy-palette-background-body' }}>
                                     <div className="h-full"  >
                                         <CurrentRoute />
                                     </div>
                                 </div>
-                                
+
                                 <WinBottom />
                             </div>}
                             {isRunningOutsideElectron && <div className="py-10 px-4 text-left w-full" >

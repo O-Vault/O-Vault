@@ -33,7 +33,6 @@ Here is the link to download the latest stable version: [Download Page](https://
 
 ## Feedbacks
 
-- You can join the [O-Vault Discord](https://discord.gg/cgHW3gVsZq) server
 - To log an issue or enhancement ticket, follow this [link](https://github.com/O-Vault/O-Vault/issues)
 - Or you can share your thoughs in the [Discussions page](https://github.com/O-Vault/O-Vault/discussions)
 
@@ -43,7 +42,7 @@ The source code is on [github](https://github.com/O-Vault/O-Vault/).
 
 ## Author
 
-Nicolas Puzin aka [end3rbyte](https://github.com/end3rbyte/)
+Nicolas Puzin aka [end3rbyte](https://github.com/end3rbyte).
 
 ## License
 

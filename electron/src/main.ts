@@ -65,4 +65,5 @@ app.on('second-instance', () => {
   focusAndRestoreWindow();
 });
 
+
 registerIpcEvents(app);

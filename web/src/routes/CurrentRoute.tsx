@@ -23,7 +23,7 @@ export function CurrentRoute() {
             break;
         case '/about':
             currentPage = <About />;
-            break;
+            break;    
         case '/open':
             currentPage = <Open />;
             break;

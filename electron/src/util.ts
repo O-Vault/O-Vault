@@ -1,4 +1,4 @@
-import { BrowserWindow, screen } from "electron";
+import { BrowserWindow, screen, shell } from "electron";
 import * as path from "path";
 import { isDev } from "./electronIsDev";
 
@@ -77,7 +77,26 @@ const createWindow = (width: number, height: number, posX:number, posY:number, p
         } else {
             win.setPosition(posX, posY, false);
         }
-    }
+    } 
+
+    win.webContents.setWindowOpenHandler(({ url }) => {
+           
+        const whitelist = [
+            'https://github.com/O-Vault/O-Vault/',
+            'https://www.o-vault.org/',
+            'https://github.com/O-Vault/O-Vault/issues',
+            'https://github.com/O-Vault/O-Vault/discussions',
+            'https://github.com/O-Vault/O-Vault/security',
+            'https://github.com/O-Vault/O-Vault/blob/main/LICENSE'
+        ];
+
+        if (whitelist.indexOf(url) >= 0) {
+            shell.openExternal(url);
+        }
+        return { action: 'deny' };
+        
+    });
+
     //win.webContents.toggleDevTools();
 
     win.once('ready-to-show', () => {

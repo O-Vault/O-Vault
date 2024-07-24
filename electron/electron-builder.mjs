@@ -32,16 +32,12 @@ const options = {
       ],
     icon: 'resources/icons/png',
     win: {
-        target: targets || ['portable', 'zip', 'msi'],
+        target: targets || ['zip', 'msi'],
         artifactName: '${productName}-${version}.${arch}.${os}.${ext}',
         icon: 'resources/icons/png',
     },
-    portable: {
-        artifactName: '${productName}-${version}.${arch}.${os}.portable.${ext}',
-    },
     msi: {
-        artifactName: '${productName}-${version}.${arch}.${os}.${ext}',
-        oneClick: false
+        artifactName: '${productName}-${version}.${arch}.${os}.${ext}'
     },
     linux: {
         target: targets || ['AppImage', 'deb', 'snap', 'rpm'],

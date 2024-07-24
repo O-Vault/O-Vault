@@ -8,10 +8,10 @@ import { IconContextMenu } from "@/icons/IconContextMenu";
 import { IconSearch } from "@/icons/IconSearch";
 
 import { RouterContext } from "@/common/RouterContext";
-import { ipcRenderer } from "@/common/ipcRenderer";
+
 import { aes } from "o-vault-lib";
 import { SessionKeyContext } from "@/common/SessionKeyContext";
-import { CURRENT_PALETTE, Palettes } from "@/common/Palettes";
+
 import { BadgeLetter } from "@/components/BadgeLetter";
 
 export function Home() {
@@ -80,7 +80,7 @@ export function Home() {
   const getLeastUsedColor = (items: VaultItem[]): number => {
 
     const aggregates: Map<number, number> = new Map();
-    Palettes[CURRENT_PALETTE].forEach((_value: string, index: number) => {
+    theme.palette.customColors.forEach((_value: string, index: number) => {
       aggregates.set(index, 0);
     });
 
@@ -119,7 +119,7 @@ export function Home() {
       item.name = filter;
     }
     item.paletteIndex = getLeastUsedColor(context.vault.items);
-    const modalResult = await ipcRenderer.openVaultItemEditModal(item, 500, 520, posX, posY);
+    const modalResult = await window.electronAPI.openVaultItemEditModal(item, 500, 470, posX, posY);
     setNewVaultItemBtnDisabled(false);
 
     if (modalResult !== undefined) {
@@ -128,7 +128,7 @@ export function Home() {
       const item: VaultItem = JSON.parse(json);
       context.vault.items.push(item);
       context.showWaitCursor = false;
-      ipcRenderer.saveVault(context.vault, context.password, sessionKey, context.vaultPath);
+      window.electronAPI.saveVault(context.vault, context.password, sessionKey, context.vaultPath);
       setFilter(item.name);
       setContext({ ...context });
     } else {
@@ -142,7 +142,7 @@ export function Home() {
     e.stopPropagation();
     const idx = context.vault.items.findIndex(curr => curr.name === item.name);
     context.vault.items.splice(idx, 1);
-    await ipcRenderer.saveVault(context.vault, context.password, sessionKey, context.vaultPath);
+    await window.electronAPI.saveVault(context.vault, context.password, sessionKey, context.vaultPath);
     setContext({ ...context });
     showSnackBarMessage(e, `Entry ${item.name} was deleted`);
   };
@@ -153,7 +153,7 @@ export function Home() {
     const posX = Number(localStorage.getItem('vaultitemedit-posx') || -1);
     const posY = Number(localStorage.getItem('vaultitemedit-posy') || -1);
 
-    const modalResult = await ipcRenderer.openVaultItemEditModal(inputItem, 500, 520, posX, posY);
+    const modalResult = await window.electronAPI.openVaultItemEditModal(inputItem, 500, 470, posX, posY);
 
     if (modalResult !== undefined) {
 
@@ -168,7 +168,7 @@ export function Home() {
       } else {
         context.vault.items.push(item);
       }
-      ipcRenderer.saveVault(context.vault, context.password, sessionKey, context.vaultPath);
+      window.electronAPI.saveVault(context.vault, context.password, sessionKey, context.vaultPath);
       setContext({ ...context });
     }
   };
@@ -273,7 +273,7 @@ export function Home() {
   const getItemColor = (item: VaultItem): string => {
 
     if (item.paletteIndex) {
-      return Palettes[CURRENT_PALETTE][item.paletteIndex];
+      return theme.palette.customColors[item.paletteIndex];
     } else {
       return theme.palette.background.winbar;
     }

@@ -1,4 +1,5 @@
-import { CURRENT_PALETTE, Palettes } from "@/common/Palettes";
+
+
 import { IconBadgeLetter } from "@/icons/IconBadgeLetter";
 import { useTheme } from "@mui/joy";
 
@@ -21,7 +22,7 @@ export function BadgeLetter({ itemName, className, width, height, paletteIndex, 
   const getItemColor = (): string => {
 
     if (paletteIndex !== undefined) {
-      return Palettes[CURRENT_PALETTE][paletteIndex];
+      return theme.palette.customColors[paletteIndex];
     } else {
       return theme.palette.background.winbar;
     }

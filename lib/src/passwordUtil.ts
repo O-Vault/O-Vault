@@ -101,8 +101,6 @@ const getRandomDigit = (): string => {
 
 const getPassphraseStrengthScore = (passphrase: string): number => {
 
-    console.debug(`Calculating score for: ${passphrase}`);
-
     const MAX_SCORE = 100;
     const MIN_SCORE = 0;
     const MAX_SCORE_PASSWORD_LENGTH = 35;
@@ -111,14 +109,12 @@ const getPassphraseStrengthScore = (passphrase: string): number => {
 
     const separator = detectPassphraseSeparator(passphrase);
     if (separator === null) {
-        console.debug(`Cannot find word separator, score is 0`);
         return 0;
     }
     const words = passphrase.split(separator);
     let penalty = 0;
     for (const word of words) {
         if (isCommonPasswordExactMatch(word)) {
-            console.debug(`Common password detected: ${word}`);
             penalty += Math.round(word.length * 2 / 3);
         }
 
@@ -130,7 +126,6 @@ const getPassphraseStrengthScore = (passphrase: string): number => {
         score = MIN_SCORE;
     }
 
-    console.debug(`Score is : ${score}`);
     return score;
 };
 
@@ -151,7 +146,6 @@ const getPenalty = (password: string): number => {
 
 const getPasswordStrengthScore = (password: string): number => {
 
-    console.debug(`Calculating score for: ${password}`);
     const MAX_SCORE = 100;
     const MIN_SCORE = 0;
     const MAX_SCORE_PASSWORD_LENGTH = 16;
@@ -162,7 +156,6 @@ const getPasswordStrengthScore = (password: string): number => {
 
     const commonPassword = findCommonPassword(password);
     if (commonPassword != null) {
-        console.debug(`Common password detected: ${commonPassword}`);
         penalty += commonPassword.length;
     }
     let score = Math.round((password.length - penalty - MIN_SCORE_PASSWORD_LENGTH) * FACTOR);
@@ -172,7 +165,6 @@ const getPasswordStrengthScore = (password: string): number => {
         score = MIN_SCORE;
     }
 
-    console.debug(`Score is : ${Math.round(score)}`);
     return Math.round(score);
 
 };

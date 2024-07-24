@@ -1,10 +1,7 @@
-import { ipcRenderer } from "@/common/ipcRenderer";
-import { CURRENT_PALETTE, Palettes } from "@/common/Palettes";
 import { SessionKeyContext } from "@/common/SessionKeyContext";
 import { VaultItem } from "@/common/Vault";
 import { BadgeLetter } from "@/components/BadgeLetter";
 import { ColorPicker } from "@/components/ColorPicker";
-import { PageHeader } from "@/components/PageHeader";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { IconContextMenu } from "@/icons/IconContextMenu";
 import { IconEye } from "@/icons/IconEye";
@@ -21,7 +18,7 @@ export interface VaultItemEditModalResult {
 
 export function VaultItemEdit() {
 
-    const MIN_CHARS_PASSWORD = 6;
+    const MIN_CHARS_PASSWORD = 4;
 
     const theme = useTheme();
 
@@ -47,13 +44,10 @@ export function VaultItemEdit() {
 
     const cancel = () => {
 
-        if (window.isModalWindow) {
-            localStorage.setItem('vaultitemedit-posx', window.screenX.toString());
-            localStorage.setItem('vaultitemedit-posy', window.screenY.toString());
-        }
+        localStorage.setItem('vaultitemedit-posx', window.screenX.toString());
+        localStorage.setItem('vaultitemedit-posy', window.screenY.toString());
         window.close();
     };
-
 
     const getDisplayType = (): string => {
 
@@ -176,7 +170,7 @@ export function VaultItemEdit() {
         item.paletteIndex = paletteIndex;
         item.url = url;
         const encryptedItem = await aes.encrypt(JSON.stringify(item), sessionKey, false);
-        ipcRenderer.closeVaultItemEditModal(encryptedItem);
+        window.electronAPI.closeVaultItemEditModal(encryptedItem);
     };
 
     const toggleVisibilityPassword = () => {
@@ -221,7 +215,7 @@ export function VaultItemEdit() {
     const getItemColor = (paletteIndex: number): string => {
 
         if (paletteIndex !== undefined) {
-            return Palettes[CURRENT_PALETTE][paletteIndex];
+            return theme.palette.customColors[paletteIndex];
         } else {
             return theme.palette.background.winbar;
         }
@@ -243,12 +237,10 @@ export function VaultItemEdit() {
         <div className="grow flex flex-col  h-full w-full items-center px-5 ">
 
             <div className="flex flex-col h-full w-full">
-                <PageHeader displayBackButton={false} className="py-4">Add New Entry</PageHeader>
 
                 <div className="px-2 grow overflow-y-auto overflow-x-hidden custom-scrollbar ">
 
-
-                    <FormControl className="pt-2" error={entryNameError.length > 0}>
+                    <FormControl className="pt-8" error={entryNameError.length > 0}>
                         <FormLabel>Entry Name</FormLabel>
                         <div className="flex flex-row w-full items-center">
                             <Input className="grow" value={entryName} slotProps={{ input: { spellCheck: false } }}
@@ -256,10 +248,12 @@ export function VaultItemEdit() {
                             <ColorPicker onChange={onChangeColor} colorPickerOpen={colorPickerOpen} onClose={() => setColorPickerOpen(false)}>
                                 {getDisplayType() === 'normal' && <BadgeLetter onClick={() => setColorPickerOpen(!colorPickerOpen)} width={36} height={36} itemName={entryName} paletteIndex={paletteIndex} className="mx-2 cursor-pointer" />}
                                 {getDisplayType() === 'compact' && <div>
-                                    <div className="mx-2" 
+                                    <div className="mx-2"
                                         onClick={() => setColorPickerOpen(!colorPickerOpen)}
-                                        style={{ borderRadius: '1px', backgroundColor: getItemColor(paletteIndex), 
-                                        width: '30px', height: '30px', cursor: 'pointer' }} >
+                                        style={{
+                                            borderRadius: '1px', backgroundColor: getItemColor(paletteIndex),
+                                            width: '30px', height: '30px', cursor: 'pointer'
+                                        }} >
                                         &nbsp;
                                     </div>
                                 </div>}

@@ -1,6 +1,6 @@
 import { KeyboardEvent, useContext, useEffect, useRef, useState } from "react";
 import { GlobalContext } from "@/common/GlobalContext";
-import { ipcRenderer } from "@/common/ipcRenderer";
+
 import { DECRYPTION_FAILED_ERROR, aes } from "o-vault-lib";
 import { RouterContext } from "@/common/RouterContext";
 import { Typography, Button, Input, IconButton } from "@mui/joy";
@@ -22,6 +22,7 @@ export function Open() {
     const sessionKey = useContext(SessionKeyContext);
 
     const [newVaultBtnDisabled, setNewVaultBtnDisabled] = useState(false);
+    const [openVaultBtnDisabled, setOpenVaultBtnDisabled] = useState(false);
     const [enteredPassword, setEnteredPassword] = useState('');
     const [inputType, setInputType] = useState('password');
     const [loaded, setLoaded] = useState(false);
@@ -58,7 +59,7 @@ export function Open() {
         const pwd = await storePassword(password);
 
         if (context.vaultLoaded === false) {
-            ipcRenderer.loadVault(pwd, sessionKey, vaultPath).then((res) => {
+            window.electronAPI.loadVault(pwd, sessionKey, vaultPath).then((res) => {
                 context.vault = res;
                 context.vaultPath = vaultPath;
                 context.vaultLoaded = true;
@@ -98,11 +99,15 @@ export function Open() {
     };
 
     const toggleVisibility = () => {
+        const input = passwordInput.current.firstChild as HTMLInputElement;
         if (inputType === 'password') {
             setInputType('text');
         } else {
             setInputType('password');
         }
+        input.focus();
+        setTimeout(() => input.setSelectionRange(input.value.length, input.value.length), 0);
+        autoHidePassword();
     };
 
     const openFile = (file: string) => {
@@ -121,7 +126,7 @@ export function Open() {
         setNewVaultBtnDisabled(true);
         context.showWaitCursor = true;
         setContext({...context});
-        const modalResult = await ipcRenderer.openVaultEditModal(500, 570, posX, posY);
+        const modalResult = await window.electronAPI.openVaultEditModal(500, 570, posX, posY);
         setNewVaultBtnDisabled(false);
         context.showWaitCursor = false;
         setContext({...context});
@@ -138,12 +143,20 @@ export function Open() {
 
     const openExistingVault = async (): Promise<void> => {
 
-        const result = await ipcRenderer.vaultSelectFile();
-
+        setOpenVaultBtnDisabled(true);
+        const result = await window.electronAPI.vaultSelectFile();
+        setOpenVaultBtnDisabled(false);
         if (!result.canceled) {
             const file = result.filePaths[0];
             openFile(file);
         }
+    };
+
+    const autoHidePassword = () => {
+        
+        setTimeout(() => {
+            setInputType('password');
+        }, 10000);
     };
 
     useEffect(() => {
@@ -231,7 +244,7 @@ export function Open() {
                 </div>
                 <div className="my-3 text-center w-full">
                     <Button color="neutral" size="md" sx={{ width: '70%' }}
-                        onClick={openExistingVault}
+                        onClick={openExistingVault} disabled={openVaultBtnDisabled}
                         variant="solid">OPEN VAULT</Button>
                 </div>
             </div>}

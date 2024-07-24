@@ -1,6 +1,6 @@
 {
     "name": "o-vault-app",
-    "version": "1.0.0-beta2-snapshot",
+    "version": "1.0.0-beta3-snapshot",
     "description": "O-Vault Password Manager",
     "main": "index.js",
     "scripts": {

@@ -3,8 +3,7 @@ import { aes } from "o-vault-lib";
 import { SessionKeyContext } from "@/common/SessionKeyContext";
 import { passwordUtil, isValidPasswordResult } from "o-vault-lib";
 import { Vault } from "@/common/Vault";
-import { ipcRenderer } from "@/common/ipcRenderer";
-import { PageHeader } from "@/components/PageHeader";
+
 import { ProtectionType, ProtectionTypeSelector } from "@/components/ProtectionTypeSelector";
 import { SnackBar, SnackBarState } from "@/components/SnackBar";
 import { IconClear } from "@/icons/IconClear";
@@ -12,8 +11,10 @@ import { IconContextMenu } from "@/icons/IconContextMenu";
 import { IconEye } from "@/icons/IconEye";
 import { IconEyeOff } from "@/icons/IconEyeOff";
 import { IconFolder } from "@/icons/IconFolder";
-import { Button, Dropdown, FormControl, FormHelperText, FormLabel, IconButton, Input, 
-    Menu, MenuButton, MenuItem, Stack, useTheme } from "@mui/joy";
+import {
+    Button, Dropdown, FormControl, FormHelperText, FormLabel, IconButton, Input,
+    Menu, MenuButton, MenuItem, Stack, Typography, useTheme
+} from "@mui/joy";
 import { KeyboardEvent, SyntheticEvent, useContext, useEffect, useRef, useState } from "react";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { useDebouncedCallback } from 'use-debounce';
@@ -72,7 +73,7 @@ export function VaultEdit() {
     const onOpenFilePath = async () => {
 
         setFileSelectorBtnDisabled(true);
-        const result = await ipcRenderer.vaultSaveFile();
+        const result = await window.electronAPI.vaultSaveFile();
         setFileSelectorBtnDisabled(false);
         if (!result.canceled) {
             const filePath: string = result.filePath;
@@ -89,6 +90,7 @@ export function VaultEdit() {
         }
         input.focus();
         setTimeout(() => input.setSelectionRange(input.value.length, input.value.length), 0);
+        autoHidePassphrase1();
     };
 
     const toggleVisibilityPassphrase2 = () => {
@@ -100,6 +102,7 @@ export function VaultEdit() {
         }
         input.focus();
         setTimeout(() => input.setSelectionRange(input.value.length, input.value.length), 0);
+        autoHidePassphrase2();
     };
 
     const getErrorMessage = (err: isValidPasswordResult) => {
@@ -150,13 +153,13 @@ export function VaultEdit() {
         if (filePath.length === 0) {
             setFilePathError('Required');
             result = false;
-        } else if (await ipcRenderer.fileExists(filePath)) {
+        } else if (await window.electronAPI.fileExists(filePath)) {
             setFilePathError('A file with the same name exists already in this folder');
             result = false;
         } else {
             setFilePathError('');
         }
-            
+
         if (passphrase1.length === 0) {
             setPassphrase1Error('Required');
             result = false;
@@ -211,10 +214,10 @@ export function VaultEdit() {
         const vault = new Vault();
         vault.name = name;
         const encryptedPassword = await aes.encrypt(passphrase1, sessionKey, false);
-        await ipcRenderer.saveVault(vault, encryptedPassword, sessionKey, filePath);
+        await window.electronAPI.saveVault(vault, encryptedPassword, sessionKey, filePath);
         localStorage.setItem('vaultedit-posx', window.screenX.toString());
         localStorage.setItem('vaultedit-posy', window.screenY.toString());
-        ipcRenderer.closeVaultEditModal(filePath, encryptedPassword);
+        window.electronAPI.closeVaultEditModal(filePath, encryptedPassword);
     };
 
     const resetPasswords = () => {
@@ -235,42 +238,39 @@ export function VaultEdit() {
     const onLeaveName = async () => {
 
         if (!filePath && name) {
-            const home:string = await ipcRenderer.getHomeFolder();
-            const separator:string = await ipcRenderer.getPathSeparator();
+            const home: string = await window.electronAPI.getHomeFolder();
+            const separator: string = await window.electronAPI.getPathSeparator();
             setFilePath(home + separator + name + '.vlx');
         }
     };
 
-    const updatePasswordStrength = (newPassword:string) => {
-                
-        setScore(passwordUtil.calculatePasswordStrength(newPassword, protectionType === 'passphrase'));       
+    const updatePasswordStrength = (newPassword: string) => {
+
+        setScore(passwordUtil.calculatePasswordStrength(newPassword, protectionType === 'passphrase'));
     };
 
     const updatePasswordStrengthWithDebounce = useDebouncedCallback(updatePasswordStrength, 300);
 
-    const onBlurInputPassphrase1 = () => {
+    const autoHidePassphrase1 = () => {
+
         setTimeout(() => {
-            const input = refInputPassphrase1.current.firstChild as HTMLInputElement;
-            if (document.activeElement !== input) {
-                setInputTypePassphrase1('password');
-            }
-        }, 30000);         
+            setInputTypePassphrase1('password');
+        }, 30000);
     };
 
-    const onBlurInputPassphrase2 = () => {
+    const autoHidePassphrase2 = () => {
+        
         setTimeout(() => {
-            const input = refInputPassphrase2.current.firstChild as HTMLInputElement;
-            if (document.activeElement !== input) {
-                setInputTypePassphrase2('password');
-            }
-        }, 30000);  
+            setInputTypePassphrase2('password');
+        }, 30000);
     };
 
     return (
         <div className="grow flex flex-col  h-full w-full items-center px-5 ">
 
             <div className="flex flex-col h-full w-full">
-                <PageHeader displayBackButton={false} className="py-4">Create New Vault</PageHeader>
+
+                <Typography level="h2" className="grow py-4" >Create New Vault</Typography>
 
                 <SnackBar snackBar={snackBar} setSnackBar={setSnackBar} width="auto" autoHideDuration={4000} />
 
@@ -278,58 +278,57 @@ export function VaultEdit() {
                     <FormControl className="pt-2" error={nameError.length > 0}>
                         <FormLabel>Name</FormLabel>
                         <Input value={name} onBlur={onLeaveName} onChange={(e) => setName(e.target.value)} autoFocus={true}
-                            slotProps={{input: {spellCheck:false}}} />
-                        <FormHelperText  sx={{marginTop:0,  visibility: nameError.length > 0 ? 'visible' : 'hidden' }}>
+                            slotProps={{ input: { spellCheck: false } }} />
+                        <FormHelperText sx={{ marginTop: 0, visibility: nameError.length > 0 ? 'visible' : 'hidden' }}>
                             {nameError}&nbsp;
                         </FormHelperText>
                     </FormControl>
 
                     <FormControl className="pt-2" error={filePathError.length > 0}>
                         <FormLabel>Destination</FormLabel>
-                        <Input  value={filePath} onChange={(e) => setFilePath(e.target.value)} 
-                            slotProps={{input: {spellCheck:false}}}
+                        <Input value={filePath} onChange={(e) => setFilePath(e.target.value)}
+                            slotProps={{ input: { spellCheck: false } }}
                             endDecorator={
                                 <div className="flex flex-row">
-                                   
-                                    <IconButton onClick={() => setFilePath('')} tabIndex={-1} sx={{width:'30px', marginRight:'0px'}} >
-                                        <IconClear style={{  width: '14px' }} />
+
+                                    <IconButton onClick={() => setFilePath('')} tabIndex={-1} sx={{ width: '30px', marginRight: '0px' }} >
+                                        <IconClear style={{ width: '14px' }} />
                                     </IconButton>
-                                   
-                                    <IconButton disabled={fileSelectorBtnDisabled} onClick={onOpenFilePath} tabIndex={-1}  sx={{width:'30px', marginRight:'0px'}}>
-                                        <IconFolder style={{ }} />
+
+                                    <IconButton disabled={fileSelectorBtnDisabled} onClick={onOpenFilePath} tabIndex={-1} sx={{ width: '30px', marginRight: '0px' }}>
+                                        <IconFolder style={{}} />
                                     </IconButton>
-                                    
+
                                 </div>
                             } />
-                        <FormHelperText sx={{marginTop:0,  visibility: filePathError.length > 0 ? 'visible' : 'hidden' }}>
+                        <FormHelperText sx={{ marginTop: 0, visibility: filePathError.length > 0 ? 'visible' : 'hidden' }}>
                             {filePathError}&nbsp;
                         </FormHelperText>
                     </FormControl>
 
                     <FormControl className="py-2">
-                        <ProtectionTypeSelector protectionType={protectionType} 
-                        setProtectionType={setProtectionType} onChange={resetPasswords } />
+                        <ProtectionTypeSelector protectionType={protectionType}
+                            setProtectionType={setProtectionType} onChange={resetPasswords} />
                     </FormControl>
 
                     {protectionType === 'passphrase' && <FormHelperText >
                         Example: « kilogram/gulf/daycare/singer/moonshine »
                     </FormHelperText>}
                     {protectionType === 'password' && <FormHelperText >
-                        Example: « cb+70+g3n8+gvhJ »                 
+                        Example: « cb+70+g3n8+gvhJ »
                     </FormHelperText>}
 
                     <FormControl className="pt-4" error={passphrase1Error.length > 0}>
 
-                        <Input type={inputTypePassphrase1} placeholder={`Enter the ${protectionType}`} value={passphrase1} 
+                        <Input type={inputTypePassphrase1} placeholder={`Enter the ${protectionType}`} value={passphrase1}
                             ref={refInputPassphrase1}
-                            onBlur={onBlurInputPassphrase1}
                             onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => { if (protectionType === 'password' && e.code === 'Space') { e.preventDefault(); } }}
                             onChange={(e) => {
                                 setPassphrase1(e.target.value);
                                 updatePasswordStrengthWithDebounce(e.target.value);
                             }}
                             className="password"
-                            slotProps={{input: {spellCheck:false}}}
+                            slotProps={{ input: { spellCheck: false } }}
                             endDecorator={
                                 <div className="flex flex-row items-center" >
                                     <div className="flex flex-row  my-2" >
@@ -360,19 +359,18 @@ export function VaultEdit() {
                                     </div>
                                 </div>
                             } />
-                        <FormHelperText sx={{ marginTop:0,  visibility: passphrase1Error.length > 0 ? 'visible' : 'hidden' }}>
+                        <FormHelperText sx={{ marginTop: 0, visibility: passphrase1Error.length > 0 ? 'visible' : 'hidden' }}>
                             {passphrase1Error}&nbsp;
                         </FormHelperText>
                     </FormControl>
                     <PasswordStrength className="my-2 mx-10" score={score} nbOfChars={passphrase1.length}></PasswordStrength>
-                    
+
                     <FormControl className="pt-4" error={passphrase2Error.length > 0}>
 
                         <Input type={inputTypePassphrase2} placeholder={`Re-enter the ${protectionType}`} value={passphrase2} onPaste={onPaste}
                             onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => { if (e.code === 'Space') { e.preventDefault(); } }}
                             ref={refInputPassphrase2}
-                            onBlur={onBlurInputPassphrase2}
-                            slotProps={{input: {spellCheck:false}}}
+                            slotProps={{ input: { spellCheck: false } }}
                             className="password"
                             onChange={(e) => setPassphrase2(e.target.value)}
                             endDecorator={
@@ -384,11 +382,11 @@ export function VaultEdit() {
 
                             } />
 
-                        <FormHelperText sx={{ marginTop:0, visibility: passphrase2Error.length > 0 ? 'visible' : 'hidden' }} >
+                        <FormHelperText sx={{ marginTop: 0, visibility: passphrase2Error.length > 0 ? 'visible' : 'hidden' }} >
                             {passphrase2Error}&nbsp;
                         </FormHelperText>
                     </FormControl>
-                    
+
                 </div>
                 <Stack direction="row" spacing={2} justifyContent="center" className="pt-4 pb-2"
                     alignItems="stretch">

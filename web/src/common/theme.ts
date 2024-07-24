@@ -5,6 +5,10 @@ declare module '@mui/joy/styles' {
    interface PaletteBackgroundOverrides {
       winbar: true;
    }
+
+   interface PaletteOverrides {
+      customColors: true;
+   }
  }
 
 
@@ -38,7 +42,13 @@ const themeOptions : CssVarsThemeOptions  = {
             "700": "#b91c1c",
             "800": "#991b1b",
             "900": "#7f1d1d"
-         }
+         },
+         customColors: [
+            '#00A35C', '#71F6BA', '#A1FA4F', '#016BF8',
+            '#0498EC', '#9FFCFD', '#FFFD55', '#FF7F27',
+            '#EF4B4B', '#A14CF5', '#FFA0D0', '#889397',
+            '#C1C7C6', '#774342', '#B04F48', '#7F82BB'
+        ]
       },
    },
     dark: {
@@ -60,7 +70,13 @@ const themeOptions : CssVarsThemeOptions  = {
           "700": "#b91c1c",
           "800": "#991b1b",
           "900": "#7f1d1d"
-        }
+        },
+        customColors: [
+            '#00A35C', '#71F6BA', '#A1FA4F', '#016BF8',
+            '#0498EC', '#9FFCFD', '#FFFD55', '#FF7F27',
+            '#EF4B4B', '#A14CF5', '#FFA0D0', '#889397',
+            '#C1C7C6', '#774342', '#B04F48', '#7F82BB'
+        ]
       }
     }
       

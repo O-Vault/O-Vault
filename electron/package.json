@@ -1,12 +1,11 @@
 {
   "name": "o-vault",
-  "version": "1.0.0-beta2-snapshot",
+  "version": "1.0.0-beta3-snapshot",
   "description": "O-Vault Password Manager",
   "homepage": "https://github.com/O-Vault/O-Vault",
   "main": "./js/main.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
+    "build": "tsc && cp ../lib/dist/src/encryption.js ./js/",
     "dev": "npm run build && electron ./js/main.js",
     "lint": "bash ../scripts/lint.sh",
     "dist:mac": "node ./electron-builder.mjs --mac dir",
@@ -25,8 +24,5 @@
     "electron-builder": "^24.13.3",
     "eslint": "^8.57.0",
     "typescript": "^5.5.3"
-  },
-  "dependencies": {
-    "o-vault-lib": "../lib"
   }
 }

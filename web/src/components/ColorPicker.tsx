@@ -1,5 +1,6 @@
 
-import { CURRENT_PALETTE, Palettes } from "@/common/Palettes";
+
+
 import { useTheme } from "@mui/joy";
 import { ReactNode } from "react";
 
@@ -13,7 +14,7 @@ interface Params {
 
 export function ColorPicker({ children, colorPickerOpen, onClose, onChange }: Params) {
 
-    const NB_COLORS_PER_ROW = 3;
+    const NB_COLORS_PER_ROW = 4;
     const theme = useTheme();
 
     const onChangeColor = (newPaletteIndex: number) => {
@@ -24,7 +25,7 @@ export function ColorPicker({ children, colorPickerOpen, onClose, onChange }: Pa
     const getColor = (color: string, index: number): ReactNode => {
 
         return color && (<div key={index} onClick={() => onChangeColor(index)} className="palette-color" style={{
-            width: '36px', height: '36px',
+            width: '28px', height: '28px',
             background: color,
             borderStyle: 'solid',
             borderWidth: '2px',
@@ -38,11 +39,11 @@ export function ColorPicker({ children, colorPickerOpen, onClose, onChange }: Pa
 
         const lines = [];
 
-        for (let row = 0; row < Math.ceil(Palettes[CURRENT_PALETTE].length / NB_COLORS_PER_ROW); row++) {
+        for (let row = 0; row < Math.ceil(theme.palette.customColors.length / NB_COLORS_PER_ROW); row++) {
 
             const colors: string[] = [];
             for (let col = 0; col < NB_COLORS_PER_ROW; col++) {
-                const currColor = Palettes[CURRENT_PALETTE][row * NB_COLORS_PER_ROW + col];
+                const currColor = theme.palette.customColors[row * NB_COLORS_PER_ROW + col];
                 colors.push(currColor);
             }
             lines.push(colors);

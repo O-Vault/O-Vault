@@ -1,4 +1,4 @@
-import { ipcRenderer } from "@/common/ipcRenderer";
+
 import { Button, Stack } from "@mui/joy";
 import { useEffect } from "react";
 
@@ -20,17 +20,17 @@ export function MessageBox() {
     const args = window.modalArgs as MessageBoxArgs;
     const ok = () => {
 
-        ipcRenderer.closeMessageBox('OK');
+        window.electronAPI.closeMessageBox('OK');
     };
 
     const cancel = () => {
 
-        ipcRenderer.closeMessageBox('CANCELLED');
+        window.electronAPI.closeMessageBox('CANCELLED');
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-            ipcRenderer.closeMessageBox('CANCELLED');
+            window.electronAPI.closeMessageBox('CANCELLED');
         }
     };
 

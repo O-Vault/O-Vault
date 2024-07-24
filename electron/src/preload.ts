@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ipcRenderer, contextBridge } from "electron";
-import * as os from "os";
+import {  contextBridge } from "electron";
+import { electronApi } from "./electronAPI";
 
-contextBridge.exposeInMainWorld('electronAPI', {
-  argv: window.process.argv,
-  platform: os.platform(),
-  invoke: (channel:string, ...args: any[]) : Promise<any> => ipcRenderer.invoke(channel, ...args),
-  send: (channel:string, ...args: any[]) : void => ipcRenderer.send(channel, ...args)
-});
+contextBridge.exposeInMainWorld('electronAPI', electronApi);
