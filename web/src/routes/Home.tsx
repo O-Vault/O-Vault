@@ -26,7 +26,7 @@ export function Home() {
   const [displayType, setDisplayType] = useState(localStorage.getItem('display'));
   const [filter, setFilter] = useState("");
   const [newVaultItemBtnDisabled, setNewVaultItemBtnDisabled] = useState(false);
-  const [snackBar, setSnackBar] = useState<SnackBarState>({ open: false, message: '' });
+  const [snackBar, setSnackBar] = useState<SnackBarState>({ open: false, message: '', isError: false });
 
   const searchInput = useRef(null);
 
@@ -40,14 +40,14 @@ export function Home() {
     }
   };
 
-  const showSnackBarMessage = (e: SyntheticEvent<HTMLElement>, message: string) => {
+  const showSnackBarMessage = (e: SyntheticEvent<HTMLElement>, message: string, isError:boolean = false) => {
 
     if (snackBar.open) {
       setTimeout(() => {
-        setSnackBar({ ...snackBar, open: true, message: message });
+        setSnackBar({ ...snackBar, open: true, message: message, isError: isError });
       }, 0);
     } else {
-      setSnackBar({ ...snackBar, open: true, message: message });
+      setSnackBar({ ...snackBar, open: true, message: message, isError: isError });
     }
     e.stopPropagation();
   };
@@ -56,10 +56,15 @@ export function Home() {
 
     if (e.ctrlKey) {
       await navigator.clipboard.writeText(item.username);
-      showSnackBarMessage(e, `Username copied for ${item.name}`);
+      if (item.username) {
+        showSnackBarMessage(e, 'Username copied', false);
+      } else {
+        showSnackBarMessage(e, 'Username is empty', true);
+      }
+      
     } else {
       await navigator.clipboard.writeText(item.password);
-      showSnackBarMessage(e, `Password copied for ${item.name}`);
+      showSnackBarMessage(e, 'Password copied', false);
     }
   };
 
@@ -67,14 +72,19 @@ export function Home() {
 
     e.stopPropagation();
     await navigator.clipboard.writeText(item.username);
-    showSnackBarMessage(e, `Username copied for ${item.name}`);
+    if (item.username) {
+      showSnackBarMessage(e, 'Username copied', false);
+    } else {
+      showSnackBarMessage(e, 'Username is empty', true);
+    }
+    
   };
 
   const copyPasswordToClipboard = async (e: SyntheticEvent<HTMLElement>, item: VaultItem) => {
 
     e.stopPropagation();
     await navigator.clipboard.writeText(item.password);
-    showSnackBarMessage(e, `Password copied for ${item.name}`);
+    showSnackBarMessage(e, 'Password copied', false);
   };
 
   const getLeastUsedColor = (items: VaultItem[]): number => {
