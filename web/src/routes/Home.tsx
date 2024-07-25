@@ -220,12 +220,6 @@ export function Home() {
     setDisplayType(localStorage.getItem('display'));
   };
 
-  const visibilityChangeHandler = () => {
-    if (!document.hidden) {
-      setFilter('');
-    }
-  };
-
   const onFocusHandler = () => {
     if (searchInput.current) {
       const input = searchInput.current.querySelector('input');
@@ -253,14 +247,12 @@ export function Home() {
     }
 
     window.addEventListener('storage', storageEventHandler, false);
-    document.addEventListener('visibilitychange', visibilityChangeHandler, false);
     document.addEventListener('onNewEntry', addNew, false);
     document.addEventListener('onCloseVault', onCloseVault, false);
     window.addEventListener('focus', onFocusHandler, false);
     window.addEventListener('blur', onBlurHandler, false);
     return () => {
       window.removeEventListener('storage', storageEventHandler, false);
-      document.removeEventListener('visibilitychange', visibilityChangeHandler, false);
       document.removeEventListener('onNewEntry', addNew, false);
       document.removeEventListener('onCloseVault', onCloseVault, false);
       window.removeEventListener('focus', onFocusHandler, false);
