@@ -1,3 +1,5 @@
+![Build App](https://github.com/O-Vault/O-Vault/actions/workflows/build-app.yml/badge.svg)
+
 # O-Vault Password Manager
 
 ## Description
