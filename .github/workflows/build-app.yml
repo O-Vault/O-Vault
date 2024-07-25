@@ -173,8 +173,8 @@ jobs:
     - name: upload artifacts 2/2
       uses: actions/upload-artifact@v4
       with:
-        name: O-Vault.${{ env.APP_VERSION }}.x64.win.msi
-        path: ./dist/O-Vault*.win.msi
+        name: O-Vault.${{ env.APP_VERSION }}.x64.win.exe
+        path: ./dist/O-Vault*.win.exe
         retention-days: 1
   publish:
     
@@ -208,7 +208,7 @@ jobs:
           gh release create v${{ env.APP_VERSION }} --prerelease --draft --latest=false --title "O-Vault ${{ env.APP_VERSION }}" \
                 --notes-file notes.txt  --target $GITHUB_SHA \
                 O-Vault.${{ env.APP_VERSION }}.x64.win.zip/* \
-                O-Vault.${{ env.APP_VERSION }}.x64.win.msi/* \
+                O-Vault.${{ env.APP_VERSION }}.x64.win.exe/* \
                 O-Vault.${{ env.APP_VERSION }}.x64.mac.zip/* \
                 O-Vault.${{ env.APP_VERSION }}.arm64.mac.zip/* \
                 O-Vault.${{ env.APP_VERSION }}.amd64.linux.deb/* \

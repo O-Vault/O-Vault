@@ -32,11 +32,11 @@ const options = {
       ],
     icon: 'resources/icons/png',
     win: {
-        target: targets || ['zip', 'msi'],
+        target: targets || ['zip', 'nsis'],
         artifactName: '${productName}-${version}.${arch}.${os}.${ext}',
         icon: 'resources/icons/png',
     },
-    msi: {
+    nsis: {
         artifactName: '${productName}-${version}.${arch}.${os}.${ext}'
     },
     linux: {
