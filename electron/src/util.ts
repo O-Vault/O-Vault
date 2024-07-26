@@ -2,6 +2,8 @@ import { BrowserWindow, screen, shell } from "electron";
 import * as path from "path";
 import { isDev } from "./electronIsDev";
 
+const DEV_TOGGLE_DEV_TOOLS = false;
+
 const loadRoute = (win: BrowserWindow, route: string, modalArguments:object = undefined): Promise<void> => {
 
     const initialRoute = (route) ? route : '/';
@@ -97,7 +99,9 @@ const createWindow = (width: number, height: number, posX:number, posY:number, p
         
     });
 
-    //win.webContents.toggleDevTools();
+    if (isDev && DEV_TOGGLE_DEV_TOOLS) {
+        win.webContents.toggleDevTools();
+    }
 
     win.once('ready-to-show', () => {
         if (parent != null) {
@@ -120,7 +124,7 @@ const getParameterByName = (name: string, url: string) => {
     if (!results[2]) {
         return '';
     }
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    return decodeURIComponent(results[2]);
 };
 
 
