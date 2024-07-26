@@ -45,6 +45,15 @@ export function App() {
         }
     };
 
+    const jsonParse = (base64Str : string)=> {
+        try {
+            return JSON.parse(atob(base64Str));
+        } catch (err) {
+            console.error(err);
+            return {};
+        }
+    };
+
     const handleInitialRedirect = (): void => {
 
         window.initialRoute = getParameterByName('route');
@@ -53,7 +62,7 @@ export function App() {
         window.isDev = isDev();
         const modalArgs = getParameterByName('modalArgs');
         if (modalArgs) {
-            window.modalArgs = JSON.parse(atob(modalArgs));
+            window.modalArgs = jsonParse(modalArgs);
         }
         if (window.initialRoute && window.initialRoute !== route.current) {
             route.current = window.initialRoute;
@@ -71,7 +80,7 @@ export function App() {
         if (!results[2]) {
             return '';
         }
-        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        return decodeURIComponent(results[2]);
     };
 
     const handleUseEffect = async () => {
