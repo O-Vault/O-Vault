@@ -100,6 +100,10 @@ const createWindow = (width: number, height: number, posX:number, posY:number, p
     //win.webContents.toggleDevTools();
 
     win.once('ready-to-show', () => {
+        if (parent != null) {
+            win.webContents.setZoomFactor(parent.webContents.getZoomFactor());
+        }
+       
         win.show();
     });
 

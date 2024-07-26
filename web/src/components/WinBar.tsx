@@ -100,7 +100,7 @@ export function WinBar() {
         const posY = Number(localStorage.getItem('settings-posy') || -1);
         context.showWaitCursor = true;
         setContext({...context});
-        await window.electronAPI.openSettingsModal(500, 420, posX, posY);
+        await window.electronAPI.openSettingsModal(450, 420, posX, posY);
         context.showWaitCursor = false;
         setContext({...context});
     };
