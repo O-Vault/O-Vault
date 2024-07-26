@@ -65,7 +65,7 @@ export function Settings() {
 
     loaded && <div id="settings" className="flex flex-col h-full pt-5 px-5" style={{ background: theme.palette.background.body }}>
 
-      <div className="grow flex flex-col ">
+      <div className="grow flex flex-col overflow-y-auto custom-scrollbar">
         <div className="px-4 py-6 flex flex-col ">
           <Typography level="h4" >
             Zoom Level
@@ -112,7 +112,7 @@ export function Settings() {
 
         </div>
       </div>
-      <Stack direction="row" spacing={2} justifyContent="center" className="py-4"
+      <Stack direction="row" spacing={4} justifyContent="center" className="pt-4 pb-2"
         alignItems="stretch">
         <Button color="neutral" sx={{ width: '150px' }} size="lg" disabled={resettingToDefault} variant="solid" onClick={resetToDefault} >RESET TO DEFAULT</Button>
         <Button color="primary" sx={{ width: '150px' }} size="lg" variant="solid" onClick={() => close()} >CLOSE</Button>
