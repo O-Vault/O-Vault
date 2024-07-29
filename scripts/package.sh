@@ -22,7 +22,11 @@ echo Packaging...
 if [[ $1 == "--mac" ]]; then
   npm --prefix ./electron run dist:mac
 elif [[ $1 == "--win" ]]; then
-  npm --prefix ./electron run dist:win
+  if [[ $2 == "--sign" ]]; then
+    npm --prefix ./electron run dist:win:all:sign
+  else
+    npm --prefix ./electron run dist:win
+  fi
 else 
   npm --prefix ./electron run dist:linux
 fi
