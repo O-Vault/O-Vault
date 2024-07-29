@@ -1,6 +1,6 @@
 {
   "name": "o-vault-web",
-  "version": "1.0.0-beta5",
+  "version": "1.0.0-beta6",
   "scripts": {
     "dev": "webpack serve",
     "build": "webpack --mode=production",

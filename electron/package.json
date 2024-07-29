@@ -1,6 +1,6 @@
 {
   "name": "o-vault",
-  "version": "1.0.0-beta5",
+  "version": "1.0.0-beta6",
   "description": "O-Vault Password Manager",
   "homepage": "https://github.com/O-Vault/O-Vault",
   "main": "./js/main.js",
