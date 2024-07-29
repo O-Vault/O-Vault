@@ -11,6 +11,7 @@
       "lint": "npm --prefix ./lib run lint && npm --prefix ./web run lint && npm --prefix ./electron run lint",
       "package:mac" : "sh ./scripts/package.sh --mac",
       "package:win" : "sh ./scripts/package.sh --win",
+      "package:win:all:sign" : "sh ./scripts/package.sh --win --sign",
       "package:linux" : "sh ./scripts/package.sh --linux",
       "clear": "rm -rf ./electron/web/ && rm -rf ./dist/ && rm -rf ./electron/js/ && rm -rf ./lib/dist/",
       "test": "npm --prefix ./lib test"
