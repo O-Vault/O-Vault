@@ -12,6 +12,7 @@
     "dist:win": "node ./electron-builder.mjs --win dir",
     "dist:linux": "node ./electron-builder.mjs --linux dir",
     "dist:win:all": "node ./electron-builder.mjs --win",
+    "dist:win:all:sign": "node ./electron-builder.mjs --win",
     "dist:mac:all": "node ./electron-builder.mjs --mac",
     "dist:linux:all": "node ./electron-builder.mjs --linux"
   },

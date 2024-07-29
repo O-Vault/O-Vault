@@ -5,3 +5,4 @@
 dist/
 /scripts/10-million-password-list-top-1000000.txt
 /scripts/most-common-passwords.formatted.json
+/electron/.env
