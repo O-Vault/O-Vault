@@ -3,6 +3,8 @@
 import * as builder from 'electron-builder';
 const Platform = builder.Platform;
 
+import { SignTool } from './codesign.mjs';
+
 const platform = process.argv[2];
 if (platform === undefined || platform === '') {
     console.log('Error: First argument is missing, expected --win, --mac or --linux');
@@ -35,6 +37,7 @@ const options = {
         target: targets || ['zip', 'nsis'],
         artifactName: '${productName}-${version}.${arch}.${os}.${ext}',
         icon: 'resources/icons/png',
+        sign: SignTool
     },
     nsis: {
         artifactName: '${productName}-${version}.${arch}.${os}.${ext}'
