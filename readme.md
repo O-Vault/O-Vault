@@ -25,7 +25,7 @@ O-Vault uses the Chromium implementation of the [Web Crypto API](https://www.chr
 
 As stated on [www.cryptomathic.com](https://www.cryptomathic.com/):
 
-> AES is the symmetric algorithm of choice for most applications today, and it is widely used, typically with 128 or 256-bit keys, the latter of which is considered strong enough to protect military TOP SECRET data. It is worth noting that, assuming no known flaws in an algorithm, brute forcing a single 128-bit key will take billions of years using any classical computing technology available today or in the foreseeable future (but see quantum computing below).
+> AES is the symmetric algorithm of choice for most applications today, and it is widely used, typically with 128 or 256-bit keys, the latter of which is considered strong enough to protect military TOP SECRET data. It is worth noting that, assuming no known flaws in an algorithm, brute forcing a single 128-bit key will take billions of years using any classical computing technology available today or in the foreseeable future.
 
 Your vault is a standalone file, you can make a backup of it on a usb key, to an external harddrive or to your cloud document provider (Google Drive, One Drive, etc).
 
