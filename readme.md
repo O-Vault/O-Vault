@@ -38,6 +38,16 @@ Here is the link to download the latest stable version: [Download Page](https://
 - To log an issue or enhancement ticket, follow this [link](https://github.com/O-Vault/O-Vault/issues)
 - Or you can share your thoughs in the [Discussions page](https://github.com/O-Vault/O-Vault/discussions)
 
+## Manifesto
+
+### Offline
+
+O-Vault is an «Offline» Password Manager. It means the vault is stored on the user device, it takes the form of an encrypted file. There is no «cloud» where the vault is sync and there will never be. There is also no need to create an account to use the app.
+
+### Secure
+
+Security is the **number one priority** and will always be. Even if security is taken very seriously, a user should have the choice to enable or not the highest level of security. For example, a user should be able to use a weak password to protect his vault if this is what he wants but in this case he needs to know that his vault is vulnerable. 
+
 ## Source code
 
 The source code is on [github](https://github.com/O-Vault/O-Vault/).
