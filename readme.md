@@ -21,7 +21,11 @@ O-Vault is fully offline, your passwords are saved locally on your device in an 
 
 With O-Vault you only need to remember one password to open your vault. All your other passwords are saved in your vault.
 
-O-Vault uses the Chromium encryption API  [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt#aes-gcm) using a strong and standard encryption algorithm (AES-GCM). If you are interested to review how the vault is encrypted, this happens [here](https://github.com/O-Vault/O-Vault/blob/main/lib/src/encryption.ts) in the encrypt function. 
+O-Vault uses the Chromium implementation of the [Web Crypto API](https://www.chromium.org/blink/webcrypto/) and more specifically it encrypts the vault using the [Rijndael AES-GCM](https://w3c.github.io/webcrypto/#aes-gcm) algorithm. 
+
+As stated on [www.cryptomathic.com](https://www.cryptomathic.com/):
+
+> AES is the symmetric algorithm of choice for most applications today, and it is widely used, typically with 128 or 256-bit keys, the latter of which is considered strong enough to protect military TOP SECRET data. It is worth noting that, assuming no known flaws in an algorithm, brute forcing a single 128-bit key will take billions of years using any classical computing technology available today or in the foreseeable future (but see quantum computing below).
 
 Your vault is a standalone file, you can make a backup of it on a usb key, to an external harddrive or to your cloud document provider (Google Drive, One Drive, etc).
 
